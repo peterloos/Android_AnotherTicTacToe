@@ -16,13 +16,13 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
+import static peterloos.de.anothertictactoe.Globals.Dimension;
+
 /**
  * Created by loospete on 24.01.2018.
  */
 
 public class TicTacToeView extends View implements View.OnTouchListener {
-
-    private final int Dimension = 3;
 
     // drawing utils
     private Paint paintLine;
@@ -47,10 +47,10 @@ public class TicTacToeView extends View implements View.OnTouchListener {
 
     private boolean firstOnDraw;
 
-    // game logic
-    private Stone[][] board;
-    private boolean firstPlayer;
     private GameState gameState;
+
+    // TODO: HIER WÄRE EIN INTERFACE BESSER !!!!
+    private TicTacToeModel model;
 
     public TicTacToeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -90,8 +90,6 @@ public class TicTacToeView extends View implements View.OnTouchListener {
         this.widthPx = -1;
         this.heightPx = -1;
 
-        // initialize model data
-        this.board = new Stone[Dimension][Dimension];
         this.firstOnDraw = true;
 
         this.restartGame();
@@ -111,14 +109,13 @@ public class TicTacToeView extends View implements View.OnTouchListener {
     }
 
     // public interface
+    public void setTicTacToeModel (TicTacToeModel model) {
+
+        this.model = model;
+    }
+
     public void restartGame() {
 
-        for (int i = 0; i < Dimension; i++) {
-            for (int j = 0; j < Dimension; j++) {
-                this.board[i][j] = Stone.Empty;
-            }
-        }
-        this.firstPlayer = true;
         this.gameState = GameState.Active;
         this.invalidate();
     }
@@ -141,16 +138,33 @@ public class TicTacToeView extends View implements View.OnTouchListener {
         this.drawLine(canvas, this.left + paddingHorizontal, this.top + 2 * this.distance, this.left + this.length - paddingHorizontal, this.top + 2 * this.distance);
     }
 
+//    private void drawStones(Canvas canvas) {
+//
+//        for (int row = 0; row < Dimension; row++) {
+//
+//            for (int col = 0; col < Dimension; col++) {
+//
+//                if (this.board[row][col] == Stone.X) {
+//
+//                    this.paintCross(canvas, row, col);
+//                } else if (this.board[row][col] == Stone.O) {
+//
+//                    this.paintCircle(canvas, row, col);
+//                }
+//            }
+//        }
+//    }
+
     private void drawStones(Canvas canvas) {
 
         for (int row = 0; row < Dimension; row++) {
 
             for (int col = 0; col < Dimension; col++) {
 
-                if (this.board[row][col] == Stone.X) {
+                if (this.model.getStoneAt(row,col) == Stone.X) {
 
                     this.paintCross(canvas, row, col);
-                } else if (this.board[row][col] == Stone.O) {
+                } else if (this.model.getStoneAt(row,col) == Stone.O) {
 
                     this.paintCircle(canvas, row, col);
                 }
@@ -206,19 +220,22 @@ public class TicTacToeView extends View implements View.OnTouchListener {
                 if (this.helperRectangles[row][col].contains(x, y)) {
 
                     // update logic
-                    if (this.setStone(row, col)) {
-
-                        this.firstPlayer = !this.firstPlayer;
+                    if (this.model.setStone(row, col)) {
 
                         // update view
                         this.invalidate();
 
-                        if (this.checkForEndOfGame()) {
+                        if (this.model.checkForEndOfGame()) {
 
-                            String result = String.format(
-                                    Locale.getDefault(),
-                                    "Tic-Tac-Toe: %s player won the game !",
-                                    this.firstPlayer ? "Second" : "First");
+                            this.gameState = GameState.Inactive;
+
+//                            String result = String.format(
+//                                    Locale.getDefault(),
+//                                    "Tic-Tac-Toe: %s player won the game !",
+//                                    this.firstPlayer ? "Second" : "First");
+
+
+                            String result = "WONNNNNNNNNNN";
 
                             Toast.makeText(this.getContext(), result, Toast.LENGTH_SHORT).show();
                         }
@@ -282,70 +299,6 @@ public class TicTacToeView extends View implements View.OnTouchListener {
         }
 
         return true;  // remove event from the event pipeline
-    }
-
-    // logic of game
-    private boolean isFieldEmpty(int row, int col) {
-
-        return this.board[row][col] == Stone.Empty;
-    }
-
-    private boolean setStone(int row, int col) {
-
-        // is there already a stone
-        if (!isFieldEmpty(row, col))
-            return false;
-
-        Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
-        this.board[row][col] = (this.firstPlayer) ? Stone.X : Stone.O;
-        return true;
-    }
-
-    private boolean checkForEndOfGame() {
-        boolean lastPlayer = !this.firstPlayer;
-
-        Stone stone = (lastPlayer) ? Stone.X : Stone.O;
-
-        // test columns
-        for (int row = 0; row < 3; row++) {
-            if (this.board[row][0] == stone && this.board[row][1] == stone && this.board[row][2] == stone)
-                return true;
-        }
-
-        // test rows
-        for (int col = 0; col < 3; col++) {
-            if (this.board[0][col] == stone && this.board[1][col] == stone && this.board[2][col] == stone)
-                return true;
-        }
-
-        // test diagonals
-        if (this.board[0][0] == stone && this.board[1][1] == stone && this.board[2][2] == stone)
-            return true;
-        if (this.board[2][0] == stone && this.board[1][1] == stone && this.board[0][2] == stone)
-            return true;
-
-        // could be a draw
-        int emtpyStones = 0;
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (this.board[row][col] == Stone.Empty) {
-                    emtpyStones++;
-                    break;
-                }
-            }
-        }
-        if (emtpyStones == 0) {
-
-            Toast.makeText(this.getContext(), "Tic-Tac-Toe: Sorry - Game over ...",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        return false;
-    }
-
-    // game specific constants - symbolic notation
-    private enum Stone {
-        Empty, X, O
     }
 
     private enum GameState {

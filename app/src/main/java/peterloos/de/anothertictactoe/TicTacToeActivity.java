@@ -8,7 +8,9 @@ import android.widget.Button;
 public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button buttonRestart;
-    private TicTacToeView tictactoeView;
+
+    private TicTacToeView view;
+    private TicTacToeModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,14 +18,18 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.setContentView(R.layout.activity_tic_tac_toe);
 
         // retrieve references of controls
-        this.tictactoeView = this.findViewById(R.id.tictactoeView);
+        this.view = this.findViewById(R.id.tictactoeView);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
         this.buttonRestart.setOnClickListener(this);
+
+        // create model
+        this.model = new TicTacToeModel(this.getApplicationContext());
+        this.view.setTicTacToeModel(this.model);
     }
 
     @Override
     public void onClick(View view) {
 
-        this.tictactoeView.restartGame();
+        this.view.restartGame();
     }
 }
