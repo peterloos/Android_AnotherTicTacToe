@@ -1,7 +1,6 @@
 package peterloos.de.anothertictactoe;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,205 +12,343 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import java.util.Locale;
 
 /**
  * Created by loospete on 24.01.2018.
  */
 
-public class TicTacToeView extends View implements View.OnClickListener, View.OnTouchListener {
+public class TicTacToeView extends View implements View.OnTouchListener {
 
-    private Paint paint;
+    private final int Dimension = 3;
+
+    // drawing utils
     private Paint paintLine;
+    private Paint paintCircle;
+    private Paint paintCross;
 
-    private Paint paintRect;
+    private int mmInPxHorizontal;
+    private int mmInPxVertical;
 
-    private int   cmInPxHorizontal;
-    private int   cmInPxVertical;
-
-    private int  widthPx;
-    private int  heightPx;
+    private int widthPx;
+    private int heightPx;
 
     private int top;
     private int left;
     private int length;
-    private int distance = length / 3;
-    private Rect[][] touchRectangles;
+    private int distance;
+    private Rect[][] helperRectangles;
 
-    private DisplayMetrics metrics;
+    private int red;
+    private int blue;
+    private int back;
+
+    private boolean firstOnDraw;
+
+    // game logic
+    private Stone[][] board;
+    private boolean firstPlayer;
+    private GameState gameState;
 
     public TicTacToeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        //
-        this.metrics = new DisplayMetrics();
+        // need some metrics to layout UI elements
+        DisplayMetrics metrics = new DisplayMetrics();
         Activity activity = ((Activity) this.getContext());
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        this.mmInPxHorizontal = this.pixelToCmHorizontal(metrics);
+        this.mmInPxVertical = this.pixelToCmVertical(metrics);
 
-        String msg = String.format( "onDraw ?????????????   width = %d, height = %d", this.getWidth(), this.getHeight());
-        Log.v("PeLo", msg);
+        // setup colors
+        this.red = Color.parseColor("#FF1E12");
+        this.blue = Color.parseColor("#00C9FC");
+        this.back = Color.parseColor("#333333");
 
-        // TOOO: Wie ist xdpi und ydpi deklariert
-//        this.cmInPxHorizontal = (int) Math.round(metrics.xdpi / 2.54);
-//        this.cmInPxVertical = (int) Math.round(metrics.ydpi / 2.54);
-
-        this.cmInPxHorizontal = (int) Math.round(metrics.xdpi / 2.54);
-        this.cmInPxVertical = (int) Math.round(metrics.ydpi / 2.54);
-
-        this.paint = new Paint();
-        this.paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        this.paint.setStrokeWidth(10);
-        this.paint.setColor(Color.BLUE);
-
+        // setup painting objects
         this.paintLine = new Paint();
         this.paintLine.setStyle(Paint.Style.FILL_AND_STROKE);
-        this.paintLine.setStrokeWidth(this.cmInPxHorizontal / 4);
-        this.paintLine.setColor(Color.BLUE);
+        this.paintLine.setStrokeWidth(this.mmInPxHorizontal * 2);
+        this.paintLine.setColor(Color.WHITE);
 
-        this.paintRect = new Paint();
-        this.paintRect.setStyle(Paint.Style.FILL_AND_STROKE);
-        /// this.paintRect.setStrokeWidth(this.cmInPxHorizontal / 4);
-        this.paintRect.setColor(Color.YELLOW);
+        this.paintCircle = new Paint();
+        this.paintCircle.setColor(this.blue);
+        this.paintCircle.setStrokeWidth(this.mmInPxHorizontal * 2);
+        this.paintCircle.setStyle(Paint.Style.STROKE);
 
-        // connect onTouch event handler
-        this.setOnClickListener(this);
+        this.paintCross = new Paint();
+        this.paintCross.setStyle(Paint.Style.FILL_AND_STROKE);
+        this.paintCross.setStrokeWidth(this.mmInPxHorizontal * 2);
+        this.paintCross.setColor(this.red);
+
+        // connect event handler
         this.setOnTouchListener(this);
 
         // need preset value
         this.widthPx = -1;
         this.heightPx = -1;
+
+        // initialize model data
+        this.board = new Stone[Dimension][Dimension];
+        this.firstOnDraw = true;
+
+        this.restartGame();
     }
 
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (this.widthPx == -1) {
+        if (this.firstOnDraw) {
 
-            // just calculate helper variables once
-            this.widthPx = this.getWidth();
-            this.heightPx = this.getHeight();
-
-            if (this.widthPx <= this.heightPx) {
-
-                this.length = this.widthPx;
-                this.top = (this.heightPx - length) / 2;
-                this.left = 0;
-            }
-            else {
-                this.length = this.heightPx;
-                this.top = 0;
-                this.left = (this.widthPx - length) / 2;;
-            }
-
-            this.distance = length / 3;
+            this.firstOnDraw = false;
+            this.init();
         }
 
-        String msg = String.format( "onDraw ###############   width = %d, height = %d", canvas.getWidth(), canvas.getHeight());
-        Log.v("PeLo", msg);
-
-        canvas.drawColor(Color.parseColor("#AAAAAA"));
-        // canvas.drawRect (rect, this.paint);
-
         this.drawBoard(canvas);
+        this.drawStones(canvas);
+    }
+
+    // public interface
+    public void restartGame() {
+
+        for (int i = 0; i < Dimension; i++) {
+            for (int j = 0; j < Dimension; j++) {
+                this.board[i][j] = Stone.Empty;
+            }
+        }
+        this.firstPlayer = true;
+        this.gameState = GameState.Active;
+        this.invalidate();
     }
 
     // private helper methods
-    private void drawBoard (Canvas canvas) {
+    private void drawBoard(Canvas canvas) {
+
+        canvas.drawColor(this.back);
 
         // compute padding
-        int paddingHorizontal = this.cmInPxHorizontal / 4;   // 2.5 mm
-        int paddingVertical = this.cmInPxVertical / 4;   // 2.5 mm
+        int paddingHorizontal = this.mmInPxHorizontal * 2;   // 2mm
+        int paddingVertical = this.mmInPxVertical * 2;   // 2mm
 
         // vertical lines
-        this.drawLine(canvas, left + distance, top + paddingVertical, left + distance, top +  length - paddingVertical);
-        this.drawLine(canvas, left + 2 * distance, top + paddingVertical, left + 2 * distance, top +  length - paddingVertical);
+        this.drawLine(canvas, this.left + this.distance, this.top + paddingVertical, this.left + this.distance, this.top + this.length - paddingVertical);
+        this.drawLine(canvas, this.left + 2 * this.distance, this.top + paddingVertical, this.left + 2 * this.distance, this.top + this.length - paddingVertical);
 
-        this.drawLine(canvas, left + paddingHorizontal, top + distance, left + length - paddingHorizontal, top +  distance);
-        this.drawLine(canvas, left + paddingHorizontal, top + 2 * distance, left + length - paddingHorizontal, top +  2 * distance);
-
+        // horizontal lines
+        this.drawLine(canvas, this.left + paddingHorizontal, this.top + this.distance, this.left + this.length - paddingHorizontal, this.top + this.distance);
+        this.drawLine(canvas, this.left + paddingHorizontal, this.top + 2 * this.distance, this.left + this.length - paddingHorizontal, this.top + 2 * this.distance);
     }
 
-    private void drawLine (Canvas canvas, float startX, float startY, float stopX, float stopY ) {
+    private void drawStones(Canvas canvas) {
 
-        canvas.drawLine(startX, startY, stopX, stopY, this.paintLine );
-    }
+        for (int row = 0; row < Dimension; row++) {
 
-    private int pixelToCmHorizontal (int pixel) {
+            for (int col = 0; col < Dimension; col++) {
 
-        return (int) Math.round(this.metrics.xdpi / 2.54);
-    }
+                if (this.board[row][col] == Stone.X) {
 
-    private int pixelToCmVertical (int pixel) {
+                    this.paintCross(canvas, row, col);
+                } else if (this.board[row][col] == Stone.O) {
 
-        return (int) Math.round(this.metrics.ydpi / 2.54);
-    }
-
-    private void evalClickEvent (int x, int y) {
-
-
-        // need these rectangles for touch/click detection
-        if (this.touchRectangles == null) {
-
-            Rect r1 = new Rect (left, top, left + distance, top + distance);
-            Rect r2 = new Rect (left + distance, top, left + 2*distance, top + distance);
-            Rect r3 = new Rect (left + 2*distance, top, left + length, top + distance);
-
-            Rect r4 = new Rect (left, top+ distance, left + distance, top + 2*distance);
-            Rect r5 = new Rect (left + distance, top+distance, left + 2*distance, top + 2*distance);
-            Rect r6 = new Rect (left + 2*distance, top+distance, left + length, top + 2*distance);
-
-
-            Rect r7 = new Rect (left, top+ 2*distance, left + distance, top + length);
-            Rect r8 = new Rect (left + distance, top+2*distance, left + 2*distance, top + length);
-            Rect r9 = new Rect (left + 2*distance, top+2*distance, left + length, top + length);
-
-            this.touchRectangles = new Rect[][] {
-                    {r1, r2, r3},
-                    {r4, r5, r6},
-                    {r7, r8, r9}
-            };
-        }
-
-
-        for (int i = 0; i < 3; i ++) {
-
-            for (int j = 0; j < 3; j ++) {
-
-                if (this.touchRectangles[i][j].contains(x, y)) {
-
-                    Log.v("PeLo", "JAAAAAAAAAAAAAAA  ==> i = " + i + ", j = " + j);
+                    this.paintCircle(canvas, row, col);
                 }
             }
         }
     }
 
-    // member variable to save the X,Y coordinates
-    private float[] lastTouchDownXY = new float[2];
+    private void drawLine(Canvas canvas, float startX, float startY, float stopX, float stopY) {
 
-    @Override
-    public void onClick(View view) {
+        canvas.drawLine(startX, startY, stopX, stopY, this.paintLine);
+    }
 
-        // retrieve the stored coordinates
-        float x = lastTouchDownXY[0];
-        float y = lastTouchDownXY[1];
+    private int pixelToCmHorizontal(DisplayMetrics metrics) {
 
-        // use the coordinates for whatever
-        Log.v("PeLo", "onClick  ==> x = " + x + ", y = " + y);
+        // exact physical pixels per inch of the screen in the X dimension
+        float xdpi = metrics.xdpi;
+        return (int) Math.round(xdpi / 25.4);
+    }
 
-        this.evalClickEvent ((int) x, (int) y);
+    private int pixelToCmVertical(DisplayMetrics metrics) {
+
+        // exact physical pixels per inch of the screen in the Y dimension
+        float ydpi = metrics.ydpi;
+        return (int) Math.round(ydpi / 25.4);
+    }
+
+    private void paintCircle(Canvas canvas, int row, int col) {
+
+        int padding = this.mmInPxHorizontal * 3;
+        Rect rect = this.helperRectangles[row][col];
+        float radius = this.distance / 2 - padding;
+        canvas.drawCircle(rect.centerX(), rect.centerY(), radius, this.paintCircle);
+    }
+
+    private void paintCross(Canvas canvas, int row, int col) {
+
+        // compute padding
+        int paddingHorizontal = this.mmInPxHorizontal * 3;   // 3mm
+        int paddingVertical = this.mmInPxVertical * 3;   // 3mm
+
+        Rect rect = this.helperRectangles[row][col];
+
+        canvas.drawLine(rect.left + paddingHorizontal, rect.top + paddingVertical, rect.right - paddingHorizontal, rect.bottom - paddingVertical, this.paintCross);
+        canvas.drawLine(rect.right - paddingHorizontal, rect.top + paddingVertical, rect.left + paddingHorizontal, rect.bottom - paddingVertical, this.paintCross);
+    }
+
+    private void evalClickEvent(int x, int y) {
+
+        for (int row = 0; row < 3; row++) {
+
+            for (int col = 0; col < 3; col++) {
+
+                if (this.helperRectangles[row][col].contains(x, y)) {
+
+                    // update logic
+                    if (this.setStone(row, col)) {
+
+                        this.firstPlayer = !this.firstPlayer;
+
+                        // update view
+                        this.invalidate();
+
+                        if (this.checkForEndOfGame()) {
+
+                            String result = String.format(
+                                    Locale.getDefault(),
+                                    "Tic-Tac-Toe: %s player won the game !",
+                                    this.firstPlayer ? "Second" : "First");
+
+                            Toast.makeText(this.getContext(), result, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    return;
+                }
+            }
+        }
+    }
+
+    private void init() {
+
+        // calculate helper variables
+        this.widthPx = this.getWidth();
+        this.heightPx = this.getHeight();
+
+        if (this.widthPx <= this.heightPx) {
+
+            this.length = this.widthPx;
+            this.top = (this.heightPx - this.length) / 2;
+            this.left = 0;
+        } else {
+            this.length = this.heightPx;
+            this.top = 0;
+            this.left = (this.widthPx - this.length) / 2;
+        }
+
+        this.distance = length / 3;
+
+        // need these rectangles for touch/click detection and to draw circles and crosses
+        Rect r1 = new Rect(this.left, this.top, this.left + this.distance, this.top + this.distance);
+        Rect r2 = new Rect(this.left + this.distance, this.top, this.left + 2 * this.distance, this.top + this.distance);
+        Rect r3 = new Rect(this.left + 2 * this.distance, this.top, this.left + this.length, this.top + this.distance);
+        Rect r4 = new Rect(this.left, this.top + this.distance, this.left + this.distance, this.top + 2 * this.distance);
+        Rect r5 = new Rect(this.left + this.distance, this.top + this.distance, this.left + 2 * this.distance, this.top + 2 * this.distance);
+        Rect r6 = new Rect(this.left + 2 * this.distance, this.top + this.distance, this.left + this.length, this.top + 2 * this.distance);
+        Rect r7 = new Rect(this.left, this.top + 2 * this.distance, this.left + this.distance, this.top + this.length);
+        Rect r8 = new Rect(this.left + this.distance, this.top + 2 * this.distance, this.left + 2 * this.distance, this.top + this.length);
+        Rect r9 = new Rect(this.left + 2 * this.distance, this.top + 2 * this.distance, this.left + this.length, this.top + this.length);
+
+        this.helperRectangles = new Rect[][]{
+                {r1, r2, r3},
+                {r4, r5, r6},
+                {r7, r8, r9}
+        };
     }
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
 
-        // save the X,Y coordinates
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            lastTouchDownXY[0] = event.getX();
-            lastTouchDownXY[1] = event.getY();
+        // this.gameState = GameState.Active;
+        if (this.gameState == GameState.Inactive) {
 
-            Log.v("PeLo", "onTouch  ==> x = " + lastTouchDownXY[0] + ", y = " + lastTouchDownXY[1]);
+            // ignore touch event
+            return false;
         }
 
-        // let the touch event pass on to whoever needs it
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            this.evalClickEvent((int) event.getX(), (int) event.getY());
+        }
+
+        return true;  // remove event from the event pipeline
+    }
+
+    // logic of game
+    private boolean isFieldEmpty(int row, int col) {
+
+        return this.board[row][col] == Stone.Empty;
+    }
+
+    private boolean setStone(int row, int col) {
+
+        // is there already a stone
+        if (!isFieldEmpty(row, col))
+            return false;
+
+        Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
+        this.board[row][col] = (this.firstPlayer) ? Stone.X : Stone.O;
+        return true;
+    }
+
+    private boolean checkForEndOfGame() {
+        boolean lastPlayer = !this.firstPlayer;
+
+        Stone stone = (lastPlayer) ? Stone.X : Stone.O;
+
+        // test columns
+        for (int row = 0; row < 3; row++) {
+            if (this.board[row][0] == stone && this.board[row][1] == stone && this.board[row][2] == stone)
+                return true;
+        }
+
+        // test rows
+        for (int col = 0; col < 3; col++) {
+            if (this.board[0][col] == stone && this.board[1][col] == stone && this.board[2][col] == stone)
+                return true;
+        }
+
+        // test diagonals
+        if (this.board[0][0] == stone && this.board[1][1] == stone && this.board[2][2] == stone)
+            return true;
+        if (this.board[2][0] == stone && this.board[1][1] == stone && this.board[0][2] == stone)
+            return true;
+
+        // could be a draw
+        int emtpyStones = 0;
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (this.board[row][col] == Stone.Empty) {
+                    emtpyStones++;
+                    break;
+                }
+            }
+        }
+        if (emtpyStones == 0) {
+
+            Toast.makeText(this.getContext(), "Tic-Tac-Toe: Sorry - Game over ...",
+                    Toast.LENGTH_SHORT).show();
+        }
+
         return false;
+    }
+
+    // game specific constants - symbolic notation
+    private enum Stone {
+        Empty, X, O
+    }
+
+    private enum GameState {
+        Active, Inactive
     }
 }

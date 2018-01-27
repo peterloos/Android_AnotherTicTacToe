@@ -1,43 +1,29 @@
 package peterloos.de.anothertictactoe;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewTreeObserver;
+import android.widget.Button;
 
-public class TicTacToeActivity extends AppCompatActivity {
+public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Paint paintBorder;
+    private Button buttonRestart;
+    private TicTacToeView tictactoeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_tic_tac_toe);
 
-        final View surface = this.findViewById(R.id.someview);
+        // retrieve references of controls
+        this.tictactoeView = this.findViewById(R.id.tictactoeView);
+        this.buttonRestart = this.findViewById(R.id.buttonRestart);
+        this.buttonRestart.setOnClickListener(this);
+    }
 
+    @Override
+    public void onClick(View view) {
 
-        ViewTreeObserver viewTreeObserver = surface.getViewTreeObserver();
-        if (viewTreeObserver.isAlive()) {
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    surface.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    int viewWidth = surface.getWidth();
-                    int viewHeight = surface.getHeight();
-
-                    String msg = String.format( "EAH   width = %d, height = %d", viewWidth, viewHeight);
-                    Log.v("PeLo", msg);
-                }
-            });
-        }
+        this.tictactoeView.restartGame();
     }
 }

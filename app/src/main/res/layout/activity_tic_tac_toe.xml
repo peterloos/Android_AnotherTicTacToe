@@ -9,10 +9,10 @@
 
     <LinearLayout
         android:id="@+id/header"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
 
     <Button
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
     </LinearLayout>
 
     <peterloos.de.anothertictactoe.TicTacToeView
-        android:id="@+id/someview"
+        android:id="@+id/tictactoeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/header"
@@ -37,9 +37,10 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/buttonRestart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Press me too" ></Button>
+            android:text="Another Game?"></Button>
 
     </LinearLayout>
 </RelativeLayout>
