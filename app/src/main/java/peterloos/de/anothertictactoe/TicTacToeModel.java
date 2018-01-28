@@ -4,61 +4,111 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
 /**
  * Created by loospete on 27.01.2018.
  */
 
-public class TicTacToeModel {
+public class TicTacToeModel implements ITicTacToe {
+
+    private enum GameState {
+        Active, Inactive
+    }
 
     // member data
+    private Context context;
+
     private Stone[][] board;
     private boolean firstPlayer;
-
-    private Context context;
+    private GameState gameState;
+    private OnBoardChangedListener listener;
 
     // c'tor
     public TicTacToeModel(Context context) {
 
         this.context = context;
         this.board = new Stone[Dimension][Dimension];
+        this.initGame();
     }
 
     // public interface
-    public void restartGame() {
+    @Override
+    public void initGame() {
 
         for (int i = 0; i < Dimension; i++) {
             for (int j = 0; j < Dimension; j++) {
                 this.board[i][j] = Stone.Empty;
             }
         }
+
         this.firstPlayer = true;
+        this.gameState = GameState.Active;
+
+        if (this.listener != null) {
+            this.listener.clearBoard();
+        }
     }
 
+    @Override
+    public Stone getStoneAt(int row, int col) {
+
+        return this.board[row][col];
+    }
+
+    @Override
+    public boolean setStone(int row, int col) {
+
+        // ignore this request - current game over or not initialized
+        if (this.gameState == GameState.Inactive)
+            return false;
+
+        // is there already a stone, ignore call
+        if (!isFieldEmpty(row, col))
+            return false;
+
+        // set stone on board
+        Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
+        Stone stone = (this.firstPlayer) ? Stone.X : Stone.O;
+        this.board[row][col] = stone;
+        this.firstPlayer = !this.firstPlayer;
+        if (this.listener != null) {
+            this.listener.stoneChangedAt(stone, row, col);
+        }
+
+        // check for end of game
+        if (this.checkForEndOfGame()) {
+
+            this.gameState = GameState.Inactive;
+
+            String result = String.format(
+                    Locale.getDefault(),
+                    "Tic-Tac-Toe: %s player won the game !",
+                    this.firstPlayer ? "Second" : "First");
+
+            Toast.makeText(this.context, result, Toast.LENGTH_SHORT).show();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void setOnBoardChangedListener(OnBoardChangedListener listener) {
+
+        this.listener = listener;
+    }
+
+    // private helper methods
     private boolean isFieldEmpty(int row, int col) {
 
         return this.board[row][col] == Stone.Empty;
     }
 
-    public boolean setStone(int row, int col) {
-
-        // is there already a stone
-        if (!isFieldEmpty(row, col))
-            return false;
-
-        Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
-        this.board[row][col] = (this.firstPlayer) ? Stone.X : Stone.O;
-
-        this.firstPlayer = !this.firstPlayer;
-
-        return true;
-    }
-
-    public boolean checkForEndOfGame() {
+    private boolean checkForEndOfGame() {
 
         boolean lastPlayer = !this.firstPlayer;
-
         Stone stone = (lastPlayer) ? Stone.X : Stone.O;
 
         // test columns
@@ -91,17 +141,12 @@ public class TicTacToeModel {
         }
         if (emptyStones == 0) {
 
+            this.gameState = GameState.Inactive;
+
             Toast.makeText(this.context, "Tic-Tac-Toe: Sorry - Game over ...",
                     Toast.LENGTH_SHORT).show();
         }
 
         return false;
     }
-
-    Stone getStoneAt (int row, int col) {
-
-        return this.board[row][col];
-    }
-
-    // private helper methods
 }

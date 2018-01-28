@@ -6,5 +6,6 @@ package peterloos.de.anothertictactoe;
 
 public class Globals {
 
+    public static final String Tag = "PeLo";
     public static final int Dimension = 3;
 }

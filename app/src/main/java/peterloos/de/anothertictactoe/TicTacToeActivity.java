@@ -30,6 +30,6 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View view) {
 
-        this.view.restartGame();
+        this.model.initGame();
     }
 }

@@ -8,4 +8,10 @@ package peterloos.de.anothertictactoe;
 enum Stone { Empty, X, O }
 
 public interface ITicTacToe {
+
+    void setOnBoardChangedListener (OnBoardChangedListener listener);
+
+    void initGame();
+    Stone getStoneAt (int row, int col);
+    boolean setStone(int row, int col);
 }

@@ -1,5 +1,6 @@
 package peterloos.de.anothertictactoe;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -12,9 +13,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
-
-import java.util.Locale;
 
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
@@ -22,7 +20,10 @@ import static peterloos.de.anothertictactoe.Globals.Dimension;
  * Created by loospete on 24.01.2018.
  */
 
-public class TicTacToeView extends View implements View.OnTouchListener {
+public class TicTacToeView extends View implements View.OnTouchListener, OnBoardChangedListener {
+
+    // model for this view
+    private ITicTacToe model;
 
     // drawing utils
     private Paint paintLine;
@@ -32,9 +33,6 @@ public class TicTacToeView extends View implements View.OnTouchListener {
     private int mmInPxHorizontal;
     private int mmInPxVertical;
 
-    private int widthPx;
-    private int heightPx;
-
     private int top;
     private int left;
     private int length;
@@ -43,29 +41,25 @@ public class TicTacToeView extends View implements View.OnTouchListener {
 
     private int red;
     private int blue;
-    private int back;
+    private int black;
 
     private boolean firstOnDraw;
 
-    private GameState gameState;
-
-    // TODO: HIER WÄRE EIN INTERFACE BESSER !!!!
-    private TicTacToeModel model;
-
+    // c'tor
     public TicTacToeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        // need some metrics to layout UI elements
+        // need some view metrics to layout UI elements
         DisplayMetrics metrics = new DisplayMetrics();
         Activity activity = ((Activity) this.getContext());
         activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        this.mmInPxHorizontal = this.pixelToCmHorizontal(metrics);
-        this.mmInPxVertical = this.pixelToCmVertical(metrics);
+        this.mmInPxHorizontal = this.pxToMMHorizontal(metrics);
+        this.mmInPxVertical = this.pxToMMVertical(metrics);
 
         // setup colors
         this.red = Color.parseColor("#FF1E12");
         this.blue = Color.parseColor("#00C9FC");
-        this.back = Color.parseColor("#333333");
+        this.black = Color.parseColor("#333333");
 
         // setup painting objects
         this.paintLine = new Paint();
@@ -86,15 +80,18 @@ public class TicTacToeView extends View implements View.OnTouchListener {
         // connect event handler
         this.setOnTouchListener(this);
 
-        // need preset value
-        this.widthPx = -1;
-        this.heightPx = -1;
-
+        // do initialization stuff just once
         this.firstOnDraw = true;
-
-        this.restartGame();
     }
 
+    // public interface
+    public void setTicTacToeModel (ITicTacToe model) {
+
+        this.model = model;
+        this.model.setOnBoardChangedListener(this);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
@@ -108,22 +105,36 @@ public class TicTacToeView extends View implements View.OnTouchListener {
         this.drawStones(canvas);
     }
 
-    // public interface
-    public void setTicTacToeModel (TicTacToeModel model) {
+    // implementation of interface 'OnBoardChangedListener'
+    @Override
+    public void stoneChangedAt(Stone stone, int row, int col) {
 
-        this.model = model;
+        // update view
+        this.invalidate();
     }
 
-    public void restartGame() {
+    @Override
+    public void clearBoard() {
 
-        this.gameState = GameState.Active;
+        // update view
         this.invalidate();
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
+
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            Log.v(Globals.Tag, "onTouch ........................................");
+            this.handleClickEvent((int) event.getX(), (int) event.getY());
+        }
+
+        return true;  // remove event from the event pipeline
     }
 
     // private helper methods
     private void drawBoard(Canvas canvas) {
 
-        canvas.drawColor(this.back);
+        canvas.drawColor(this.black);
 
         // compute padding
         int paddingHorizontal = this.mmInPxHorizontal * 2;   // 2mm
@@ -138,34 +149,13 @@ public class TicTacToeView extends View implements View.OnTouchListener {
         this.drawLine(canvas, this.left + paddingHorizontal, this.top + 2 * this.distance, this.left + this.length - paddingHorizontal, this.top + 2 * this.distance);
     }
 
-//    private void drawStones(Canvas canvas) {
-//
-//        for (int row = 0; row < Dimension; row++) {
-//
-//            for (int col = 0; col < Dimension; col++) {
-//
-//                if (this.board[row][col] == Stone.X) {
-//
-//                    this.paintCross(canvas, row, col);
-//                } else if (this.board[row][col] == Stone.O) {
-//
-//                    this.paintCircle(canvas, row, col);
-//                }
-//            }
-//        }
-//    }
-
     private void drawStones(Canvas canvas) {
 
         for (int row = 0; row < Dimension; row++) {
-
             for (int col = 0; col < Dimension; col++) {
-
                 if (this.model.getStoneAt(row,col) == Stone.X) {
-
                     this.paintCross(canvas, row, col);
                 } else if (this.model.getStoneAt(row,col) == Stone.O) {
-
                     this.paintCircle(canvas, row, col);
                 }
             }
@@ -175,20 +165,6 @@ public class TicTacToeView extends View implements View.OnTouchListener {
     private void drawLine(Canvas canvas, float startX, float startY, float stopX, float stopY) {
 
         canvas.drawLine(startX, startY, stopX, stopY, this.paintLine);
-    }
-
-    private int pixelToCmHorizontal(DisplayMetrics metrics) {
-
-        // exact physical pixels per inch of the screen in the X dimension
-        float xdpi = metrics.xdpi;
-        return (int) Math.round(xdpi / 25.4);
-    }
-
-    private int pixelToCmVertical(DisplayMetrics metrics) {
-
-        // exact physical pixels per inch of the screen in the Y dimension
-        float ydpi = metrics.ydpi;
-        return (int) Math.round(ydpi / 25.4);
     }
 
     private void paintCircle(Canvas canvas, int row, int col) {
@@ -207,40 +183,28 @@ public class TicTacToeView extends View implements View.OnTouchListener {
 
         Rect rect = this.helperRectangles[row][col];
 
-        canvas.drawLine(rect.left + paddingHorizontal, rect.top + paddingVertical, rect.right - paddingHorizontal, rect.bottom - paddingVertical, this.paintCross);
-        canvas.drawLine(rect.right - paddingHorizontal, rect.top + paddingVertical, rect.left + paddingHorizontal, rect.bottom - paddingVertical, this.paintCross);
+        canvas.drawLine(
+                rect.left + paddingHorizontal,
+                rect.top + paddingVertical,
+                rect.right - paddingHorizontal,
+                rect.bottom - paddingVertical,
+                this.paintCross);
+
+        canvas.drawLine(
+                rect.right - paddingHorizontal,
+                rect.top + paddingVertical,
+                rect.left + paddingHorizontal,
+                rect.bottom - paddingVertical,
+                this.paintCross);
     }
 
-    private void evalClickEvent(int x, int y) {
+    private void handleClickEvent(int x, int y) {
 
         for (int row = 0; row < 3; row++) {
-
             for (int col = 0; col < 3; col++) {
-
                 if (this.helperRectangles[row][col].contains(x, y)) {
 
-                    // update logic
-                    if (this.model.setStone(row, col)) {
-
-                        // update view
-                        this.invalidate();
-
-                        if (this.model.checkForEndOfGame()) {
-
-                            this.gameState = GameState.Inactive;
-
-//                            String result = String.format(
-//                                    Locale.getDefault(),
-//                                    "Tic-Tac-Toe: %s player won the game !",
-//                                    this.firstPlayer ? "Second" : "First");
-
-
-                            String result = "WONNNNNNNNNNN";
-
-                            Toast.makeText(this.getContext(), result, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
+                    this.model.setStone(row, col); // update model
                     return;
                 }
             }
@@ -250,18 +214,19 @@ public class TicTacToeView extends View implements View.OnTouchListener {
     private void init() {
 
         // calculate helper variables
-        this.widthPx = this.getWidth();
-        this.heightPx = this.getHeight();
+        int widthPx = this.getWidth();
+        int heightPx = this.getHeight();
 
-        if (this.widthPx <= this.heightPx) {
+        if (widthPx <= heightPx) {
 
-            this.length = this.widthPx;
-            this.top = (this.heightPx - this.length) / 2;
+            this.length = widthPx;
+            this.top = (heightPx - this.length) / 2;
             this.left = 0;
         } else {
-            this.length = this.heightPx;
+
+            this.length = heightPx;
             this.top = 0;
-            this.left = (this.widthPx - this.length) / 2;
+            this.left = (widthPx - this.length) / 2;
         }
 
         this.distance = length / 3;
@@ -284,24 +249,17 @@ public class TicTacToeView extends View implements View.OnTouchListener {
         };
     }
 
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
+    private int pxToMMHorizontal(DisplayMetrics metrics) {
 
-        // this.gameState = GameState.Active;
-        if (this.gameState == GameState.Inactive) {
-
-            // ignore touch event
-            return false;
-        }
-
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            this.evalClickEvent((int) event.getX(), (int) event.getY());
-        }
-
-        return true;  // remove event from the event pipeline
+        // compute exact physical pixels per inch of the screen (X dimension)
+        float xdpi = metrics.xdpi;
+        return (int) Math.round(xdpi / 25.4);
     }
 
-    private enum GameState {
-        Active, Inactive
+    private int pxToMMVertical(DisplayMetrics metrics) {
+
+        // compute exact physical pixels per inch of the screen (Y dimension)
+        float ydpi = metrics.ydpi;
+        return (int) Math.round(ydpi / 25.4);
     }
 }
