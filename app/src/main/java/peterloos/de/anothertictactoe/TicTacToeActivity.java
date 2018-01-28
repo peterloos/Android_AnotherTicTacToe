@@ -10,7 +10,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     private Button buttonRestart;
 
     private TicTacToeView view;
-    private TicTacToeModel model;
+    private ITicTacToe model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,9 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.buttonRestart.setOnClickListener(this);
 
         // create model
-        this.model = new TicTacToeModel(this.getApplicationContext());
+
+        // this.model = new TicTacToeModelOffline(this.getApplicationContext());
+        this.model = new TicTacToeModelFirebase(this.getApplicationContext());
         this.view.setTicTacToeModel(this.model);
     }
 

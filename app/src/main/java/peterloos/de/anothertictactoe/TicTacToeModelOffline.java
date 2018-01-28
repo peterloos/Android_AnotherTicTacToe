@@ -12,7 +12,7 @@ import static peterloos.de.anothertictactoe.Globals.Dimension;
  * Created by loospete on 27.01.2018.
  */
 
-public class TicTacToeModel implements ITicTacToe {
+public class TicTacToeModelOffline implements ITicTacToe {
 
     private enum GameState {
         Active, Inactive
@@ -27,7 +27,7 @@ public class TicTacToeModel implements ITicTacToe {
     private OnBoardChangedListener listener;
 
     // c'tor
-    public TicTacToeModel(Context context) {
+    public TicTacToeModelOffline(Context context) {
 
         this.context = context;
         this.board = new Stone[Dimension][Dimension];
