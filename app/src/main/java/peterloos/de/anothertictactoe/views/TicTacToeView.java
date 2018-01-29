@@ -1,6 +1,5 @@
-package peterloos.de.anothertictactoe;
+package peterloos.de.anothertictactoe.views;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,6 +12,11 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import peterloos.de.anothertictactoe.Globals;
+import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
+import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
+import peterloos.de.anothertictactoe.models.GameStone;
 
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
@@ -107,7 +111,7 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
 
     // implementation of interface 'OnBoardChangedListener'
     @Override
-    public void stoneChangedAt(Stone stone, int row, int col) {
+    public void stoneChangedAt(GameStone stone, int row, int col) {
 
         // update view
         this.invalidate();
@@ -153,9 +157,9 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
 
         for (int row = 0; row < Dimension; row++) {
             for (int col = 0; col < Dimension; col++) {
-                if (this.model.getStoneAt(row,col) == Stone.X) {
+                if (this.model.getStoneAt(row,col) == GameStone.X) {
                     this.paintCross(canvas, row, col);
-                } else if (this.model.getStoneAt(row,col) == Stone.O) {
+                } else if (this.model.getStoneAt(row,col) == GameStone.O) {
                     this.paintCircle(canvas, row, col);
                 }
             }

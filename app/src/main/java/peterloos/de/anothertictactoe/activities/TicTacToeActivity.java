@@ -1,9 +1,14 @@
-package peterloos.de.anothertictactoe;
+package peterloos.de.anothertictactoe.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import peterloos.de.anothertictactoe.R;
+import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
+import peterloos.de.anothertictactoe.models.TicTacToeModelFirebase;
+import peterloos.de.anothertictactoe.views.TicTacToeView;
 
 public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener {
 

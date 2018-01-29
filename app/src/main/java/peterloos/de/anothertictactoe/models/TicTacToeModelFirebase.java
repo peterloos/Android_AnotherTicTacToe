@@ -1,4 +1,4 @@
-package peterloos.de.anothertictactoe;
+package peterloos.de.anothertictactoe.models;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,12 +9,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
+import peterloos.de.anothertictactoe.Globals;
+import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
+import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
+
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
 /**
  * Created by loospete on 28.01.2018.
  */
-
 
 class Cell
 {
@@ -34,27 +39,49 @@ class Cell
     }
 }
 
-
 public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
-
-    // member data
-    private Context context;
 
     // Firebase utils
     private FirebaseDatabase database;
     private DatabaseReference boardRef;
 
+    // member data
+    private Context context;
+    private HashMap<String, String> board;
+    private boolean firstPlayer;
+    private GameState gameState;
+    private OnBoardChangedListener listener;
+
     // c'tor
     public TicTacToeModelFirebase(Context context) {
 
         this.context = context;
-//        this.board = new Stone[Dimension][Dimension];
-//        this.initGame();
+        this.board = new HashMap<String, String>();
+        this.initGame();
 
         // init access to database
         this.database = FirebaseDatabase.getInstance();
         this.boardRef = database.getReference("board");
         this.boardRef.addValueEventListener(this);
+    }
+
+    // public interface
+    @Override
+    public void initGame() {
+
+        for (int row = 0; row < Dimension; row++) {
+            for (int col = 0; col < Dimension; col++) {
+                String key = Integer.toString  ((row + 1) * Dimension + col);
+                this.board.put(key, "Empty");
+            }
+        }
+
+        this.firstPlayer = true;
+        this.gameState = GameState.Active;
+
+        if (this.listener != null) {
+            this.listener.clearBoard();
+        }
     }
 
     // implementation of interface 'ITicTacToe'
@@ -64,12 +91,7 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
     }
 
     @Override
-    public void initGame() {
-
-    }
-
-    @Override
-    public Stone getStoneAt(int row, int col) {
+    public GameStone getStoneAt(int row, int col) {
         return null;
     }
 

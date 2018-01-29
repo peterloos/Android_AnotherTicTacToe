@@ -1,4 +1,6 @@
-package peterloos.de.anothertictactoe;
+package peterloos.de.anothertictactoe.interfaces;
+
+import peterloos.de.anothertictactoe.models.GameStone;
 
 /**
  * Created by loospete on 28.01.2018.
@@ -10,5 +12,5 @@ public interface OnBoardChangedListener {
     // TODO: WARTE NOCH, BIS FIREBASE DRIN IST !!!
     // TODO: OnBoardUpdateListener müsste dann das Interface heißen
     void clearBoard();
-    void stoneChangedAt (Stone stone, int row, int col);
+    void stoneChangedAt (GameStone stone, int row, int col);
 }

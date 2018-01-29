@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="peterloos.de.anothertictactoe.TicTacToeActivity">
+    tools:context="peterloos.de.anothertictactoe.activities.TicTacToeActivity">
 
     <LinearLayout
         android:id="@+id/header"
@@ -21,7 +21,7 @@
 
     </LinearLayout>
 
-    <peterloos.de.anothertictactoe.TicTacToeView
+    <peterloos.de.anothertictactoe.views.TicTacToeView
         android:id="@+id/tictactoeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,10 +1,13 @@
-package peterloos.de.anothertictactoe;
+package peterloos.de.anothertictactoe.models;
 
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.Locale;
+
+import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
+import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
 
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
@@ -14,14 +17,10 @@ import static peterloos.de.anothertictactoe.Globals.Dimension;
 
 public class TicTacToeModelOffline implements ITicTacToe {
 
-    private enum GameState {
-        Active, Inactive
-    }
-
     // member data
     private Context context;
 
-    private Stone[][] board;
+    private GameStone[][] board;
     private boolean firstPlayer;
     private GameState gameState;
     private OnBoardChangedListener listener;
@@ -30,7 +29,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     public TicTacToeModelOffline(Context context) {
 
         this.context = context;
-        this.board = new Stone[Dimension][Dimension];
+        this.board = new GameStone[Dimension][Dimension];
         this.initGame();
     }
 
@@ -40,7 +39,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
 
         for (int i = 0; i < Dimension; i++) {
             for (int j = 0; j < Dimension; j++) {
-                this.board[i][j] = Stone.Empty;
+                this.board[i][j] = GameStone.Empty;
             }
         }
 
@@ -53,7 +52,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
-    public Stone getStoneAt(int row, int col) {
+    public GameStone getStoneAt(int row, int col) {
 
         return this.board[row][col];
     }
@@ -71,7 +70,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
 
         // set stone on board
         Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
-        Stone stone = (this.firstPlayer) ? Stone.X : Stone.O;
+        GameStone stone = (this.firstPlayer) ? GameStone.X : GameStone.O;
         this.board[row][col] = stone;
         this.firstPlayer = !this.firstPlayer;
         if (this.listener != null) {
@@ -103,13 +102,13 @@ public class TicTacToeModelOffline implements ITicTacToe {
     // private helper methods
     private boolean isFieldEmpty(int row, int col) {
 
-        return this.board[row][col] == Stone.Empty;
+        return this.board[row][col] == GameStone.Empty;
     }
 
     private boolean checkForEndOfGame() {
 
         boolean lastPlayer = !this.firstPlayer;
-        Stone stone = (lastPlayer) ? Stone.X : Stone.O;
+        GameStone stone = (lastPlayer) ? GameStone.X : GameStone.O;
 
         // test columns
         for (int row = 0; row < 3; row++) {
@@ -133,7 +132,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
         int emptyStones = 0;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (this.board[row][col] == Stone.Empty) {
+                if (this.board[row][col] == GameStone.Empty) {
                     emptyStones++;
                     break;
                 }
