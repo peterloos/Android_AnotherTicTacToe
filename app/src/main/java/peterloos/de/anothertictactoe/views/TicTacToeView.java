@@ -208,7 +208,7 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
             for (int col = 0; col < 3; col++) {
                 if (this.helperRectangles[row][col].contains(x, y)) {
 
-                    this.model.setStone(row, col); // update model
+                    this.model.setStone(row + 1, col + 1); // update model
                     return;
                 }
             }
