@@ -25,6 +25,14 @@ class Cell
 {
     private String state;
 
+    public Cell() {
+        // default constructor required for Firebase
+    }
+
+    public Cell(String state) {
+        this.state = state;
+    }
+
     public String getState() {
         return state;
     }
@@ -71,8 +79,8 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
 
         for (int row = 0; row < Dimension; row++) {
             for (int col = 0; col < Dimension; col++) {
-                String key = Integer.toString  ((row + 1) * Dimension + col);
-                this.board.put(key, "Empty");
+                String key = this.cellToKey(row, col);
+                this.board.put(key, GameStone.Empty.toString());
             }
         }
 
@@ -97,54 +105,57 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
 
     @Override
     public boolean setStone(int row, int col) {
-        return false;
+
+        String key = this.cellToKey(row, col);
+
+        // ignore this request - current game over or not initialized
+        if (this.gameState == GameState.Inactive)
+            return false;
+
+        // is there already a stone, ignore call
+        if (!isFieldEmpty(key))
+            return false;
+
+        // set stone on board
+        Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
+        GameStone stone = (this.firstPlayer) ? GameStone.X : GameStone.O;
+        this.setStoneInternal(row, col, stone);
+        this.firstPlayer = !this.firstPlayer;
+
+        // ??????????????????????????????????????????????????
+//        if (this.listener != null) {
+//            this.listener.stoneChangedAt(stone, row, col);
+//        }
+
+        return true;
     }
 
     // implementation of interface 'ValueEventListener'
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
-        // This method is called once with the initial value and again
-        // whenever data at this location is updated.
-        // String value = dataSnapshot.getValue(String.class);
 
-        dataSnapshot.exists();
+        if (dataSnapshot.exists()) {
 
-        // Log.d(Globals.Tag, "Value is: " + dataSnapshot.toString());
+            for (DataSnapshot data : dataSnapshot.getChildren()) {
 
-        // GEHT !!!
-//        for (DataSnapshot data : dataSnapshot.getChildren()) {
-//
-//            Log.d(Globals.Tag, "    Key:   " + data.getKey());
-//            Log.d(Globals.Tag, "    Value: " + data.getValue());
-//        }
+                Log.d(Globals.Tag, "    Key:   " + data.getKey());
+                for (DataSnapshot subData : data.getChildren()) {
 
-        // Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                    if (subData.getKey().equals("col1")) {
 
-        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                        Cell cell = subData.getValue(Cell.class);
+                        Log.d(Globals.Tag, "        Value at col1: " + cell.toString());
+                    }
+                    else if (subData.getKey().equals("col2")) {
 
-            Log.d(Globals.Tag, "    Key:   " + data.getKey());
-//            Log.d(Globals.Tag, "    Value: " + data.getValue());
+                        Cell cell = subData.getValue(Cell.class);
+                        Log.d(Globals.Tag, "        Value at col2: " + cell.toString());
+                    }
+                    else if (subData.getKey().equals("col3")) {
 
-            for (DataSnapshot subData : data.getChildren()) {
-
-                // Log.d(Globals.Tag, "    Key:   " + subData.getKey());
-//                Log.d(Globals.Tag, "    Value: " + subData.getValue());
-
-                if (subData.getKey().equals("col1")) {
-
-                    // Log.d(Globals.Tag, "        Value at col1: " + subData.getValue());
-                    Cell cell = subData.getValue(Cell.class);
-                    Log.d(Globals.Tag, "        Value at col1: " + cell.toString());
-                }
-                else if (subData.getKey().equals("col2")) {
-
-                    Cell cell = subData.getValue(Cell.class);
-                    Log.d(Globals.Tag, "        Value at col2: " + cell.toString());
-                }
-                else if (subData.getKey().equals("col3")) {
-
-                    Cell cell = subData.getValue(Cell.class);
-                    Log.d(Globals.Tag, "        Value at col3: " + cell.toString());
+                        Cell cell = subData.getValue(Cell.class);
+                        Log.d(Globals.Tag, "        Value at col3: " + cell.toString());
+                    }
                 }
             }
         }
@@ -155,5 +166,25 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
         // Failed to read value
         // TODO: ERror handling
         Log.w(Globals.Tag, "Failed to read value.", error.toException());
+    }
+
+    // private helper methods
+    private String cellToKey (int row, int col) {
+
+        return Integer.toString (row * Dimension + (col+1));
+    }
+
+    private boolean isFieldEmpty(String key) {
+
+        String value = this.board.get(key);
+        return value.equals(GameStone.Empty.toString());
+    }
+
+    public void setStoneInternal(int r, int c, GameStone stone) {
+
+        String row = "row" + (r+1);
+        String col = "col" + (c+1);
+        Cell cell = new Cell (stone.toString());
+        this.boardRef.child(row).child(col).setValue(cell);
     }
 }

@@ -15,19 +15,19 @@
         android:orientation="horizontal">
 
     <Button
+        android:id="@+id/buttonTest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Press me" ></Button>
 
     </LinearLayout>
 
-    <peterloos.de.anothertictactoe.views.TicTacToeView
+    <peterloos.de.anothertictactoe.views.TicTacToeSurfaceView
         android:id="@+id/tictactoeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/header"
         android:layout_above="@+id/footer" />
-
 
     <LinearLayout
         android:id="@+id/footer"

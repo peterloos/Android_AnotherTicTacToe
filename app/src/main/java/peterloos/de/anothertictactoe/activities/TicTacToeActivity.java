@@ -8,13 +8,17 @@ import android.widget.Button;
 import peterloos.de.anothertictactoe.R;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.models.TicTacToeModelFirebase;
+import peterloos.de.anothertictactoe.models.TicTacToeModelOffline;
+import peterloos.de.anothertictactoe.views.TicTacToeSurfaceView;
 import peterloos.de.anothertictactoe.views.TicTacToeView;
 
 public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private Button buttonTest;
     private Button buttonRestart;
 
-    private TicTacToeView view;
+    // private TicTacToeView view;
+    private TicTacToeSurfaceView view;
     private ITicTacToe model;
 
     @Override
@@ -24,18 +28,27 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
         // retrieve references of controls
         this.view = this.findViewById(R.id.tictactoeView);
+        this.buttonTest = this.findViewById(R.id.buttonTest);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
+        this.buttonTest.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
 
         // create model
-
-        // this.model = new TicTacToeModelOffline(this.getApplicationContext());
-        this.model = new TicTacToeModelFirebase(this.getApplicationContext());
+        this.model = new TicTacToeModelOffline(this.getApplicationContext());
+        // this.model = new TicTacToeModelFirebase(this.getApplicationContext());
         this.view.setTicTacToeModel(this.model);
     }
 
     @Override
     public void onClick(View view) {
+
+        if (view == this.buttonRestart) {
+
+        }
+        else if (view == this.buttonTest) {
+
+            this.view.drawBoard();
+        }
 
         this.model.initGame();
     }
