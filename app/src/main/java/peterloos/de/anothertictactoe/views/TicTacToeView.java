@@ -111,7 +111,7 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
 
     // implementation of interface 'OnBoardChangedListener'
     @Override
-    public void stoneChangedAt(GameStone stone, int row, int col) {
+    public void stoneChangedAt(int row, int col, GameStone stone) {
 
         // update view
         this.invalidate();
@@ -157,9 +157,9 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
 
         for (int row = 0; row < Dimension; row++) {
             for (int col = 0; col < Dimension; col++) {
-                if (this.model.getStoneAt(row,col) == GameStone.X) {
+                if (this.model.getStoneAt(row + 1,col + 1) == GameStone.X) {
                     this.paintCross(canvas, row, col);
-                } else if (this.model.getStoneAt(row,col) == GameStone.O) {
+                } else if (this.model.getStoneAt(row + 1,col + 1) == GameStone.O) {
                     this.paintCircle(canvas, row, col);
                 }
             }

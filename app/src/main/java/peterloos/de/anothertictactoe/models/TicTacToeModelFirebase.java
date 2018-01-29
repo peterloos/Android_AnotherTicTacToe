@@ -65,6 +65,7 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
 
         this.context = context;
         this.board = new HashMap<String, String>();
+
         this.initGame();
 
         // init access to database
@@ -77,8 +78,8 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
     @Override
     public void initGame() {
 
-        for (int row = 0; row < Dimension; row++) {
-            for (int col = 0; col < Dimension; col++) {
+        for (int row = 1; row <= Dimension; row++) {
+            for (int col = 1; col <= Dimension; col++) {
                 String key = this.cellToKey(row, col);
                 this.board.put(key, GameStone.Empty.toString());
             }
@@ -96,11 +97,15 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
     @Override
     public void setOnBoardChangedListener(OnBoardChangedListener listener) {
 
+        this.listener = listener;
     }
 
     @Override
     public GameStone getStoneAt(int row, int col) {
-        return null;
+
+        String key = this.cellToKey(row, col);
+        String value = this.board.get(key);
+        return GameStone.valueOf(value);
     }
 
     @Override
@@ -131,6 +136,43 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
     }
 
     // implementation of interface 'ValueEventListener'
+//    @Override
+//    public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//        if (dataSnapshot.exists()) {
+//
+//            for (DataSnapshot data : dataSnapshot.getChildren()) {
+//
+//                Log.d(Globals.Tag, "    Key:   " + data.getKey());
+//                for (DataSnapshot subData : data.getChildren()) {
+//
+//                    if (subData.getKey().equals("col1")) {
+//
+//                        Cell cell = subData.getValue(Cell.class);
+//                        Log.d(Globals.Tag, "        Value at col1: " + cell.toString());
+//                    }
+//                    else if (subData.getKey().equals("col2")) {
+//
+//                        Cell cell = subData.getValue(Cell.class);
+//                        Log.d(Globals.Tag, "        Value at col2: " + cell.toString());
+//                    }
+//                    else if (subData.getKey().equals("col3")) {
+//
+//                        Cell cell = subData.getValue(Cell.class);
+//                        Log.d(Globals.Tag, "        Value at col3: " + cell.toString());
+//                    }
+//                }
+//            }
+//
+//            // TODO: DAS MUSS HIER HIN ... oDER BEI DEM OBSERVALBLE !!!!!
+//            if (this.listener != null) {
+//                this.listener.stoneChangedAt(stone, row, col);
+//            }
+//        }
+//    }
+
+
+
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -145,21 +187,49 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
 
                         Cell cell = subData.getValue(Cell.class);
                         Log.d(Globals.Tag, "        Value at col1: " + cell.toString());
+                        this.onCellChanged (data.getKey(), "col1", cell.getState());
                     }
                     else if (subData.getKey().equals("col2")) {
 
                         Cell cell = subData.getValue(Cell.class);
                         Log.d(Globals.Tag, "        Value at col2: " + cell.toString());
+                        this.onCellChanged (data.getKey(), "col2", cell.getState());
                     }
                     else if (subData.getKey().equals("col3")) {
 
                         Cell cell = subData.getValue(Cell.class);
                         Log.d(Globals.Tag, "        Value at col3: " + cell.toString());
+                        this.onCellChanged (data.getKey(), "col3", cell.getState());
                     }
                 }
             }
         }
     }
+
+    private void onCellChanged (String row, String col, String stone) {
+
+        String key = this.cellToKey(row, col);
+        String value = this.board.get(key);
+
+        GameStone oldStone = GameStone.valueOf(value);
+        GameStone newStone = GameStone.valueOf(stone);
+
+        if (oldStone != newStone) {
+
+            // enter new stone into hash map of model
+            this.board.put(key, stone);
+
+            // fire notification
+            if (this.listener != null) {
+
+                this.listener.stoneChangedAt(
+                        this.rowToInt(row),
+                        this.colToInt(col),
+                        GameStone.valueOf(stone));
+            }
+        }
+    }
+
 
     @Override
     public void onCancelled(DatabaseError error) {
@@ -171,7 +241,18 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
     // private helper methods
     private String cellToKey (int row, int col) {
 
-        return Integer.toString (row * Dimension + (col+1));
+        // return Integer.toString (row * Dimension + col);
+        return Integer.toString ((row - 1) * Dimension + col);
+    }
+
+    private String cellToKey (String srow, String scol) {
+
+//        int row = srow.charAt(3) - '0';
+//        int col = scol.charAt(3) - '0';
+
+        int row = this.rowToInt (srow);
+        int col = this.colToInt (scol);
+        return this.cellToKey (row, col);
     }
 
     private boolean isFieldEmpty(String key) {
@@ -179,6 +260,18 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
         String value = this.board.get(key);
         return value.equals(GameStone.Empty.toString());
     }
+
+    private int rowToInt (String row) {
+
+        return row.charAt(3) - '0';
+    }
+
+    private int colToInt (String row) {
+
+        return row.charAt(3) - '0';
+    }
+
+
 
     public void setStoneInternal(int r, int c, GameStone stone) {
 

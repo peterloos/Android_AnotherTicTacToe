@@ -12,5 +12,5 @@ public interface OnBoardChangedListener {
     // TODO: WARTE NOCH, BIS FIREBASE DRIN IST !!!
     // TODO: OnBoardUpdateListener müsste dann das Interface heißen
     void clearBoard();
-    void stoneChangedAt (GameStone stone, int row, int col);
+    void stoneChangedAt (int row, int col, GameStone stone);
 }

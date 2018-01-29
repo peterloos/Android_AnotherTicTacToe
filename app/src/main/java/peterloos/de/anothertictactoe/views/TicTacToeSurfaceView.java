@@ -149,7 +149,7 @@ public class TicTacToeSurfaceView extends SurfaceView implements SurfaceHolder.C
     }
 
     @Override
-    public void stoneChangedAt(GameStone stone, int row, int col) {
+    public void stoneChangedAt(int row, int col, GameStone stone) {
 
         Log.v(Globals.Tag, "stoneChangedAt ==========");
 

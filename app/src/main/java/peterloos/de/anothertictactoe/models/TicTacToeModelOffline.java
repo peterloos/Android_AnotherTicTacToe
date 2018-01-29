@@ -74,7 +74,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
         this.board[row][col] = stone;
         this.firstPlayer = !this.firstPlayer;
         if (this.listener != null) {
-            this.listener.stoneChangedAt(stone, row, col);
+            this.listener.stoneChangedAt(row, col, stone);
         }
 
         // check for end of game

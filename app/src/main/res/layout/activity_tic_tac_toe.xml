@@ -22,7 +22,7 @@
 
     </LinearLayout>
 
-    <peterloos.de.anothertictactoe.views.TicTacToeSurfaceView
+    <peterloos.de.anothertictactoe.views.TicTacToeView
         android:id="@+id/tictactoeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
