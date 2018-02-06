@@ -1,24 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="peterloos.de.anothertictactoe.activities.TicTacToeActivity">
 
-    <LinearLayout
-        android:id="@+id/header"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="horizontal">
+        android:background="?attr/colorPrimaryDark"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <Button
-        android:id="@+id/buttonTest"
+    <!-- TODO -->
+    <!-- Enter your nickname that will be used to play this Multiplayer-Tic-Tac-Toe: -->
+
+    <LinearLayout
+        android:id="@+id/nickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Press me" ></Button>
+        android:layout_below="@+id/main_toolbar"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textviewNickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_toolbar"
+            android:textSize="18sp"
+            android:text="Nickname:" android:textStyle="normal|bold" />
+
+        <EditText
+            android:id="@+id/edittextNickname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_toolbar"
+            android:text=""/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/buttonRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/nickname"
+        android:text="Register" />
+
+    <LinearLayout
+        android:id="@+id/linearlayoutPlayers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonRegister"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textviewPlayer1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_toolbar"
+            android:textAlignment="textStart"
+            android:layout_gravity="start"
+            android:text="Hans"
+            android:textSize="18sp"
+            android:textStyle="normal|italic" />
+
+        <TextView
+            android:id="@+id/textviewPlayer2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_toolbar"
+            android:textAlignment="textEnd"
+            android:layout_gravity="end"
+            android:text="Georg"
+            android:textSize="18sp"
+            android:textStyle="normal|italic" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearlayoutScores"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearlayoutPlayers"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textviewScore1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_toolbar"
+            android:textAlignment="textStart"
+            android:layout_gravity="start"
+            android:text="Score: 0"
+            android:textStyle="normal|italic" />
+
+        <TextView
+            android:id="@+id/textviewScore2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_toolbar"
+            android:textAlignment="textEnd"
+            android:layout_gravity="end"
+            android:text="Score: 0"
+            android:textStyle="normal|italic" />
 
     </LinearLayout>
 
@@ -26,8 +119,8 @@
         android:id="@+id/tictactoeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/header"
-        android:layout_above="@+id/footer" />
+        android:layout_above="@+id/footer"
+        android:layout_below="@+id/linearlayoutScores" />
 
     <LinearLayout
         android:id="@+id/footer"
@@ -38,9 +131,18 @@
 
         <Button
             android:id="@+id/buttonRestart"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Another Game?"></Button>
+            android:text="Another Game?" />
+
+        <Button
+            android:id="@+id/buttonUnregister"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Unregister" />
 
     </LinearLayout>
+
 </RelativeLayout>

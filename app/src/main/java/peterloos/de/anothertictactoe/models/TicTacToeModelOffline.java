@@ -144,6 +144,12 @@ public class TicTacToeModelOffline implements ITicTacToe {
 
             Toast.makeText(this.context, "Tic-Tac-Toe: Sorry - Game over ...",
                     Toast.LENGTH_SHORT).show();
+
+            // TODO:
+            // Dialog:
+            // "Game Over"
+            // "It's a draw"
+            // "Return to main menu" oder "ok"
         }
 
         return false;
