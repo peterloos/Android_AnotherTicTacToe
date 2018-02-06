@@ -34,7 +34,7 @@ class Cell
     }
 
     public String getState() {
-        return state;
+        return this.state;
     }
 
     public void setState(String state) {
@@ -47,11 +47,39 @@ class Cell
     }
 }
 
-public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
+class Player
+{
+    private String name;
+
+    public Player() {
+        // default constructor required for Firebase
+    }
+
+    public Player(String name) {
+        this.name = name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Name: ==> " + this.name;
+    }
+}
+
+public class TicTacToeModelFirebase implements ITicTacToe {
 
     // Firebase utils
     private FirebaseDatabase database;
-    private DatabaseReference boardRef;
+    private DatabaseReference refBoard;
+    private DatabaseReference refPlayers;
 
     // member data
     private Context context;
@@ -68,8 +96,41 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
 
         // init access to database
         this.database = FirebaseDatabase.getInstance();
-        this.boardRef = database.getReference("board");
-        this.boardRef.addValueEventListener(this);
+        this.refBoard = database.getReference("board");
+        this.refBoard.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    TicTacToeModelFirebase.this.evaluateBoardSnapshot(dataSnapshot);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                // TODO: ERror handling
+                Log.w(Globals.Tag, "Failed to read value.", error.toException());
+            }
+        });
+
+        this.refPlayers = database.getReference("players");
+        this.refPlayers.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    TicTacToeModelFirebase.this.evaluatePlayersSnapshot(dataSnapshot);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                // TODO: ERror handling
+                Log.w(Globals.Tag, "Failed to read value.", error.toException());
+            }
+        });
 
         this.initGame();
     }
@@ -138,34 +199,30 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
         return true;
     }
 
-    @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
+    public void evaluateBoardSnapshot(DataSnapshot dataSnapshot) {
 
-        if (dataSnapshot.exists()) {
+        for (DataSnapshot data : dataSnapshot.getChildren()) {
 
-            for (DataSnapshot data : dataSnapshot.getChildren()) {
+            Log.d(Globals.Tag, "    Key:   " + data.getKey());
+            for (DataSnapshot subData : data.getChildren()) {
 
-                Log.d(Globals.Tag, "    Key:   " + data.getKey());
-                for (DataSnapshot subData : data.getChildren()) {
+                if (subData.getKey().equals("col1")) {
 
-                    if (subData.getKey().equals("col1")) {
+                    Cell cell = subData.getValue(Cell.class);
+                    // Log.d(Globals.Tag, "        Value at col1: " + cell.toString());
+                    this.onCellChanged (data.getKey(), "col1", cell.getState());
+                }
+                else if (subData.getKey().equals("col2")) {
 
-                        Cell cell = subData.getValue(Cell.class);
-                        // Log.d(Globals.Tag, "        Value at col1: " + cell.toString());
-                        this.onCellChanged (data.getKey(), "col1", cell.getState());
-                    }
-                    else if (subData.getKey().equals("col2")) {
+                    Cell cell = subData.getValue(Cell.class);
+                    // Log.d(Globals.Tag, "        Value at col2: " + cell.toString());
+                    this.onCellChanged (data.getKey(), "col2", cell.getState());
+                }
+                else if (subData.getKey().equals("col3")) {
 
-                        Cell cell = subData.getValue(Cell.class);
-                        // Log.d(Globals.Tag, "        Value at col2: " + cell.toString());
-                        this.onCellChanged (data.getKey(), "col2", cell.getState());
-                    }
-                    else if (subData.getKey().equals("col3")) {
-
-                        Cell cell = subData.getValue(Cell.class);
-                        // Log.d(Globals.Tag, "        Value at col3: " + cell.toString());
-                        this.onCellChanged (data.getKey(), "col3", cell.getState());
-                    }
+                    Cell cell = subData.getValue(Cell.class);
+                    // Log.d(Globals.Tag, "        Value at col3: " + cell.toString());
+                    this.onCellChanged (data.getKey(), "col3", cell.getState());
                 }
             }
         }
@@ -193,13 +250,6 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
                         GameStone.valueOf(stone));
             }
         }
-    }
-
-    @Override
-    public void onCancelled(DatabaseError error) {
-        // Failed to read value
-        // TODO: ERror handling
-        Log.w(Globals.Tag, "Failed to read value.", error.toException());
     }
 
     // private helper methods
@@ -239,6 +289,48 @@ public class TicTacToeModelFirebase implements ITicTacToe, ValueEventListener {
         String row = "row" + r;
         String col = "col" + c;
         Cell cell = new Cell (stone.toString());
-        this.boardRef.child(row).child(col).setValue(cell);
+        this.refBoard.child(row).child(col).setValue(cell);
+    }
+
+//    public void evaluatePlayersSnapshot(DataSnapshot dataSnapshot) {
+//
+//        for (DataSnapshot data : dataSnapshot.getChildren()) {
+//
+//            Log.d(Globals.Tag, "    Key:   " + data.getKey());
+//            for (DataSnapshot subData : data.getChildren()) {
+//
+//                if (subData.getKey().equals("player_01")) {
+//
+//                    String name = subData.getValue(String.class);
+//                    Log.d(Globals.Tag, "        NAME_01:  " + name);
+//                    // this.onCellChanged (data.getKey(), "col1", cell.getState());
+//                }
+//                else if (subData.getKey().equals("player_02")) {
+//
+//                    String name = subData.getValue(String.class);
+//                    Log.d(Globals.Tag, "        NAME_02:  " + name);
+//                    // this.onCellChanged (data.getKey(), "col2", cell.getState());
+//                }
+//            }
+//        }
+//    }
+
+    public void evaluatePlayersSnapshot(DataSnapshot dataSnapshot) {
+
+        for (DataSnapshot data : dataSnapshot.getChildren()) {
+
+            Log.d(Globals.Tag, "    Key:   " + data.getKey());
+
+            if (data.getKey().equals("player_01")) {
+
+                Player player = data.getValue(Player.class);
+                Log.d(Globals.Tag, "        NAME_01:  " + player.getName());
+            }
+            else if (data.getKey().equals("player_02")) {
+
+                Player player = data.getValue(Player.class);
+                Log.d(Globals.Tag, "        NAME_02:  " + player.getName());
+            }
+        }
     }
 }
