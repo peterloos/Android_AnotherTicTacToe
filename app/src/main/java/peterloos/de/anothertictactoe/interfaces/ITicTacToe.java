@@ -9,6 +9,10 @@ import peterloos.de.anothertictactoe.models.GameStone;
 public interface ITicTacToe {
 
     void setOnBoardChangedListener (OnBoardChangedListener listener);
+    void setOnPlayersChangedListener(OnPlayersChangedListener listener);
+
+    void registerPlayer (String player);
+    void unregisterPlayer (String player);
 
     void initGame();
     GameStone getStoneAt (int row, int col);

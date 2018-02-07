@@ -14,6 +14,7 @@ import java.util.HashMap;
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
+import peterloos.de.anothertictactoe.interfaces.OnPlayersChangedListener;
 
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
@@ -67,7 +68,6 @@ class Player
         return this.name;
     }
 
-
     @Override
     public String toString() {
         return "Name: ==> " + this.name;
@@ -84,9 +84,15 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     // member data
     private Context context;
     private HashMap<String, String> board;
-    private boolean firstPlayer;
+    private boolean isFirstPlayer;
     private GameState gameState;
-    private OnBoardChangedListener listener;
+
+    private String firstPlayer = "";
+    private String secondPlayer = "";
+
+    // listeners
+    private OnBoardChangedListener boardListener;
+    private OnPlayersChangedListener playersListener;
 
     // c'tor
     public TicTacToeModelFirebase(Context context) {
@@ -133,9 +139,41 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         });
 
         this.initGame();
+
+        // TODO: Warum steht das nicht in initGame
+        this.firstPlayer = "";
+        this.secondPlayer = "";
     }
 
-    // public interface
+    // implementation of interface 'ITicTacToe'
+
+    @Override
+    public void setOnBoardChangedListener(OnBoardChangedListener listener) {
+
+        this.boardListener = listener;
+    }
+
+    @Override
+    public void setOnPlayersChangedListener(OnPlayersChangedListener listener) {
+
+        this.playersListener = listener;
+    }
+
+    @Override
+    public void registerPlayer (String player) {
+
+
+//         WEITER: Welhes child ist zu setzten: Erster oder zweiter Spieler ....
+//         WEITER: Dann
+//        this.refBoard.child(row).child(col).setValue(cell);
+
+    }
+
+    @Override
+    public void unregisterPlayer (String player) {
+
+    }
+
     @Override
     public void initGame() {
 
@@ -154,19 +192,12 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             }
         }
 
-        this.firstPlayer = true;
+        this.isFirstPlayer = true;
         this.gameState = GameState.Active;
 
-        if (this.listener != null) {
-            this.listener.clearBoard();
+        if (this.boardListener != null) {
+            this.boardListener.clearBoard();
         }
-    }
-
-    // implementation of interface 'ITicTacToe'
-    @Override
-    public void setOnBoardChangedListener(OnBoardChangedListener listener) {
-
-        this.listener = listener;
     }
 
     @Override
@@ -192,14 +223,15 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
         // set stone on board
         Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
-        GameStone stone = (this.firstPlayer) ? GameStone.X : GameStone.O;
+        GameStone stone = (this.isFirstPlayer) ? GameStone.X : GameStone.O;
         this.setStoneRemote(row, col, stone);
-        this.firstPlayer = !this.firstPlayer;
+        this.isFirstPlayer = !this.isFirstPlayer;
 
         return true;
     }
 
-    public void evaluateBoardSnapshot(DataSnapshot dataSnapshot) {
+    // private helper methods
+    private void evaluateBoardSnapshot(DataSnapshot dataSnapshot) {
 
         for (DataSnapshot data : dataSnapshot.getChildren()) {
 
@@ -242,9 +274,9 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             this.board.put(key, stone);
 
             // fire notification
-            if (this.listener != null) {
+            if (this.boardListener != null) {
 
-                this.listener.stoneChangedAt(
+                this.boardListener.stoneChangedAt(
                         this.rowToInt(row),
                         this.colToInt(col),
                         GameStone.valueOf(stone));
@@ -252,16 +284,12 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
     }
 
-    // private helper methods
     private String cellToKey (int row, int col) {
 
         return Integer.toString ((row - 1) * Dimension + col);
     }
 
     private String cellToKey (String srow, String scol) {
-
-//        int row = srow.charAt(3) - '0';
-//        int col = scol.charAt(3) - '0';
 
         int row = this.rowToInt (srow);
         int col = this.colToInt (scol);
@@ -284,7 +312,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         return row.charAt(3) - '0';
     }
 
-    public void setStoneRemote(int r, int c, GameStone stone) {
+    private void setStoneRemote(int r, int c, GameStone stone) {
 
         String row = "row" + r;
         String col = "col" + c;
@@ -292,30 +320,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.refBoard.child(row).child(col).setValue(cell);
     }
 
-//    public void evaluatePlayersSnapshot(DataSnapshot dataSnapshot) {
-//
-//        for (DataSnapshot data : dataSnapshot.getChildren()) {
-//
-//            Log.d(Globals.Tag, "    Key:   " + data.getKey());
-//            for (DataSnapshot subData : data.getChildren()) {
-//
-//                if (subData.getKey().equals("player_01")) {
-//
-//                    String name = subData.getValue(String.class);
-//                    Log.d(Globals.Tag, "        NAME_01:  " + name);
-//                    // this.onCellChanged (data.getKey(), "col1", cell.getState());
-//                }
-//                else if (subData.getKey().equals("player_02")) {
-//
-//                    String name = subData.getValue(String.class);
-//                    Log.d(Globals.Tag, "        NAME_02:  " + name);
-//                    // this.onCellChanged (data.getKey(), "col2", cell.getState());
-//                }
-//            }
-//        }
-//    }
-
-    public void evaluatePlayersSnapshot(DataSnapshot dataSnapshot) {
+    private void evaluatePlayersSnapshot(DataSnapshot dataSnapshot) {
 
         for (DataSnapshot data : dataSnapshot.getChildren()) {
 
@@ -324,13 +329,21 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             if (data.getKey().equals("player_01")) {
 
                 Player player = data.getValue(Player.class);
+                this.firstPlayer = player.getName();
                 Log.d(Globals.Tag, "        NAME_01:  " + player.getName());
             }
             else if (data.getKey().equals("player_02")) {
 
                 Player player = data.getValue(Player.class);
+                this.secondPlayer = player.getName();
                 Log.d(Globals.Tag, "        NAME_02:  " + player.getName());
             }
+        }
+
+        // fire notification
+        if (this.playersListener != null) {
+
+            this.playersListener.playersChanged(firstPlayer, secondPlayer);
         }
     }
 }

@@ -8,6 +8,7 @@ import java.util.Locale;
 
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
+import peterloos.de.anothertictactoe.interfaces.OnPlayersChangedListener;
 
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
@@ -23,7 +24,10 @@ public class TicTacToeModelOffline implements ITicTacToe {
     private GameStone[][] board;
     private boolean firstPlayer;
     private GameState gameState;
-    private OnBoardChangedListener listener;
+
+    // listeners
+    private OnBoardChangedListener boardListener;
+    private OnPlayersChangedListener playersListener;
 
     // c'tor
     public TicTacToeModelOffline(Context context) {
@@ -33,7 +37,32 @@ public class TicTacToeModelOffline implements ITicTacToe {
         this.initGame();
     }
 
-    // public interface
+    // implementation of interface 'ITicTacToe'
+
+    @Override
+    public void setOnBoardChangedListener(OnBoardChangedListener listener) {
+
+        this.boardListener = listener;
+    }
+
+    @Override
+    public void setOnPlayersChangedListener(OnPlayersChangedListener listener) {
+
+        this.playersListener = listener;
+    }
+
+    @Override
+    public void registerPlayer (String player) {
+
+        // TODO: TBD
+    }
+
+    @Override
+    public void unregisterPlayer (String player) {
+
+        // TODO: TBD
+    }
+
     @Override
     public void initGame() {
 
@@ -46,8 +75,8 @@ public class TicTacToeModelOffline implements ITicTacToe {
         this.firstPlayer = true;
         this.gameState = GameState.Active;
 
-        if (this.listener != null) {
-            this.listener.clearBoard();
+        if (this.boardListener != null) {
+            this.boardListener.clearBoard();
         }
     }
 
@@ -73,8 +102,8 @@ public class TicTacToeModelOffline implements ITicTacToe {
         GameStone stone = (this.firstPlayer) ? GameStone.X : GameStone.O;
         this.board[row][col] = stone;
         this.firstPlayer = !this.firstPlayer;
-        if (this.listener != null) {
-            this.listener.stoneChangedAt(row, col, stone);
+        if (this.boardListener != null) {
+            this.boardListener.stoneChangedAt(row, col, stone);
         }
 
         // check for end of game
@@ -91,12 +120,6 @@ public class TicTacToeModelOffline implements ITicTacToe {
         }
 
         return true;
-    }
-
-    @Override
-    public void setOnBoardChangedListener(OnBoardChangedListener listener) {
-
-        this.listener = listener;
     }
 
     // private helper methods

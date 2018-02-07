@@ -12,10 +12,12 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
+import peterloos.de.anothertictactoe.interfaces.OnPlayersChangedListener;
 import peterloos.de.anothertictactoe.models.GameStone;
 
 import static peterloos.de.anothertictactoe.Globals.Dimension;
