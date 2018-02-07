@@ -2,6 +2,7 @@ package peterloos.de.anothertictactoe.models;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -10,6 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
@@ -22,8 +24,7 @@ import static peterloos.de.anothertictactoe.Globals.Dimension;
  * Created by loospete on 28.01.2018.
  */
 
-class Cell
-{
+class Cell {
     private String state;
 
     public Cell() {
@@ -48,8 +49,7 @@ class Cell
     }
 }
 
-class Player
-{
+class Player {
     private String name;
 
     public Player() {
@@ -160,17 +160,22 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     }
 
     @Override
-    public void registerPlayer (String player) {
+    public void registerPlayer(String name) {
 
+        Player player = new Player(name);
 
-//         WEITER: Welhes child ist zu setzten: Erster oder zweiter Spieler ....
-//         WEITER: Dann
-//        this.refBoard.child(row).child(col).setValue(cell);
+        if (this.firstPlayer.equals("")) {
 
+            this.refPlayers.child("player_01").setValue(player);
+        }
+        else {
+
+            this.refPlayers.child("player_02").setValue(player);
+        }
     }
 
     @Override
-    public void unregisterPlayer (String player) {
+    public void unregisterPlayer(String player) {
 
     }
 
@@ -227,6 +232,9 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.setStoneRemote(row, col, stone);
         this.isFirstPlayer = !this.isFirstPlayer;
 
+        // check for end of game
+        // TODO ...
+
         return true;
     }
 
@@ -242,25 +250,23 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                     Cell cell = subData.getValue(Cell.class);
                     // Log.d(Globals.Tag, "        Value at col1: " + cell.toString());
-                    this.onCellChanged (data.getKey(), "col1", cell.getState());
-                }
-                else if (subData.getKey().equals("col2")) {
+                    this.onCellChanged(data.getKey(), "col1", cell.getState());
+                } else if (subData.getKey().equals("col2")) {
 
                     Cell cell = subData.getValue(Cell.class);
                     // Log.d(Globals.Tag, "        Value at col2: " + cell.toString());
-                    this.onCellChanged (data.getKey(), "col2", cell.getState());
-                }
-                else if (subData.getKey().equals("col3")) {
+                    this.onCellChanged(data.getKey(), "col2", cell.getState());
+                } else if (subData.getKey().equals("col3")) {
 
                     Cell cell = subData.getValue(Cell.class);
                     // Log.d(Globals.Tag, "        Value at col3: " + cell.toString());
-                    this.onCellChanged (data.getKey(), "col3", cell.getState());
+                    this.onCellChanged(data.getKey(), "col3", cell.getState());
                 }
             }
         }
     }
 
-    private void onCellChanged (String row, String col, String stone) {
+    private void onCellChanged(String row, String col, String stone) {
 
         String key = this.cellToKey(row, col);
         String value = this.board.get(key);
@@ -284,16 +290,16 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
     }
 
-    private String cellToKey (int row, int col) {
+    private String cellToKey(int row, int col) {
 
-        return Integer.toString ((row - 1) * Dimension + col);
+        return Integer.toString((row - 1) * Dimension + col);
     }
 
-    private String cellToKey (String srow, String scol) {
+    private String cellToKey(String srow, String scol) {
 
-        int row = this.rowToInt (srow);
-        int col = this.colToInt (scol);
-        return this.cellToKey (row, col);
+        int row = this.rowToInt(srow);
+        int col = this.colToInt(scol);
+        return this.cellToKey(row, col);
     }
 
     private boolean isFieldEmpty(String key) {
@@ -302,12 +308,12 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         return value.equals(GameStone.Empty.toString());
     }
 
-    private int rowToInt (String row) {
+    private int rowToInt(String row) {
 
         return row.charAt(3) - '0';
     }
 
-    private int colToInt (String row) {
+    private int colToInt(String row) {
 
         return row.charAt(3) - '0';
     }
@@ -316,7 +322,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
         String row = "row" + r;
         String col = "col" + c;
-        Cell cell = new Cell (stone.toString());
+        Cell cell = new Cell(stone.toString());
         this.refBoard.child(row).child(col).setValue(cell);
     }
 
@@ -331,8 +337,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                 Player player = data.getValue(Player.class);
                 this.firstPlayer = player.getName();
                 Log.d(Globals.Tag, "        NAME_01:  " + player.getName());
-            }
-            else if (data.getKey().equals("player_02")) {
+            } else if (data.getKey().equals("player_02")) {
 
                 Player player = data.getValue(Player.class);
                 this.secondPlayer = player.getName();

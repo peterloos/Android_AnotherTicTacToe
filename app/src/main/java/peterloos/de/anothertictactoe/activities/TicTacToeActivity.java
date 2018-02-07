@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,12 +16,6 @@ import peterloos.de.anothertictactoe.interfaces.OnPlayersChangedListener;
 import peterloos.de.anothertictactoe.models.TicTacToeModelFirebase;
 import peterloos.de.anothertictactoe.views.TicTacToeView;
 
-// TODO
-// https://github.com/riscie/websocket-tic-tac-toe
-// "Waiting to get paired"
-// "Game begins"
-// "Restart"
-
 public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener, OnPlayersChangedListener {
 
     // UI controls
@@ -28,7 +23,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     private Button buttonUnregister;
     private Button buttonRestart;
 
-    private TextView textviewNickname;
+    private EditText edittextNickname;
     private TextView textviewPlayer1;
     private TextView textviewPlayer2;
 
@@ -55,7 +50,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.view = this.findViewById(R.id.tictactoeView);
         this.buttonRegister = this.findViewById(R.id.buttonRegister);
         this.buttonUnregister = this.findViewById(R.id.buttonUnregister);
-        this.textviewNickname = this.findViewById(R.id.textviewNickname);
+        this.edittextNickname = this.findViewById(R.id.edittextNickname);
         this.textviewPlayer1 = this.findViewById(R.id.textviewPlayer1);
         this.textviewPlayer2 = this.findViewById(R.id.textviewPlayer2);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
@@ -83,11 +78,13 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         }
         else if (view == this.buttonRegister) {
 
-            String nickname = this.textviewNickname.getText().toString();
-
+            String nickname = this.edittextNickname.getText().toString();
             if (! nickname.equals("")) {
 
                 this.model.registerPlayer(nickname);
+
+                // clear UI
+                this.edittextNickname.setText("");
             }
         }
         else if (view == this.buttonUnregister) {
