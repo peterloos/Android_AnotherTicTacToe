@@ -12,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
@@ -83,12 +84,15 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     private DatabaseReference refBoard;
     private DatabaseReference refPlayers;
 
-    // member data
+    // general member data
     private Context context;
+
+    // game utils
     private HashMap<String, String> board;
     private boolean isFirstPlayer;
     private GameState gameState;
 
+    // players utils
     // TODO: Das sollte ein array von Objekten sein !!!!!!!!!!!!!!!1
     private String[] playerNames;
     private String[] playerKeys;
@@ -324,6 +328,8 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     @Override
     public GameStone getStoneAt(int row, int col) {
 
+        // Log.v("PeLo", "getStoneAt ==> row = " + row + ", col = " + col);
+
         String key = this.cellToKey(row, col);
         String value = this.board.get(key);
         return GameStone.valueOf(value);
@@ -348,8 +354,18 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.setStoneRemote(row, col, stone);
         this.isFirstPlayer = !this.isFirstPlayer;
 
-        // check for end of game
-        // TODO ...
+//        // check for end of game
+//        if (this.checkForEndOfGame()) {
+//
+//            this.gameState = GameState.Inactive;
+//
+//            String result = String.format(
+//                    Locale.getDefault(),
+//                    "Tic-Tac-Toe: %s player won the game !",
+//                    this.isFirstPlayer ? "Second" : "First");
+//
+//            Toast.makeText(this.context, result, Toast.LENGTH_SHORT).show();
+//        }
 
         return true;
     }
@@ -403,11 +419,25 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                         this.colToInt(col),
                         GameStone.valueOf(stone));
             }
+
+            // check for end of game
+            if (this.checkForEndOfGame()) {
+
+                this.gameState = GameState.Inactive;
+
+                String result = String.format(
+                        Locale.getDefault(),
+                        "Tic-Tac-Toe: %s player won the game !",
+                        this.isFirstPlayer ? "Second" : "First");
+
+                Toast.makeText(this.context, result, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     private String cellToKey(int row, int col) {
 
+        // assertion: row and col are in the range 1..3
         return Integer.toString((row - 1) * Dimension + col);
     }
 
@@ -495,5 +525,79 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     (this.playerNames[0] == null) ? "" : this.playerNames[0],
                     (this.playerNames[1] == null) ? "" : this.playerNames[1]);
         }
+    }
+
+    private boolean checkForEndOfGame() {
+
+        // check for end of game, using a hash map based board :-)
+
+        Log.d(Globals.Tag, "checkForEndOfGame: ");
+
+        boolean lastPlayer = !this.isFirstPlayer;
+        GameStone stone = (lastPlayer) ? GameStone.X : GameStone.O;
+
+        // test columns
+        for (int row = 1; row <= 3; row++) {
+
+            GameStone stone1 = this.getStoneAt(row, 1);
+            GameStone stone2 = this.getStoneAt(row, 2);
+            GameStone stone3 = this.getStoneAt(row, 3);
+
+            if (stone1 == stone && stone2 == stone && stone3 == stone)
+                return true;
+        }
+
+        // test rows
+        for (int col = 1; col <= 3; col++) {
+
+            GameStone stone1 = this.getStoneAt(1, col);
+            GameStone stone2 = this.getStoneAt(2, col);
+            GameStone stone3 = this.getStoneAt(3, col);
+
+            if (stone1 == stone && stone2 == stone && stone3 == stone)
+                return true;
+        }
+
+        // test diagonals
+        GameStone stone11 = this.getStoneAt(1, 1);
+        GameStone stone22 = this.getStoneAt(2, 2);
+        GameStone stone33 = this.getStoneAt(3, 3);
+
+        if (stone11 == stone && stone22 == stone && stone33 == stone)
+            return true;
+
+
+        GameStone stone31 = this.getStoneAt(3, 1);
+        GameStone stone13 = this.getStoneAt(1, 3);
+
+        if (stone31 == stone && stone22 == stone && stone13 == stone)
+            return true;
+
+        // could be a draw
+        int emptyStones = 0;
+        for (int row = 1; row <= 3; row++) {
+            for (int col = 1; col <= 3; col++) {
+                GameStone s = this.getStoneAt(row, col);
+                if (s == GameStone.Empty) {
+                    emptyStones++;
+                    break;
+                }
+            }
+        }
+        if (emptyStones == 0) {
+
+            this.gameState = GameState.Inactive;
+
+            Toast.makeText(this.context, "Tic-Tac-Toe: Game over - it's a draw",
+                    Toast.LENGTH_SHORT).show();
+
+            // TODO:
+            // Dialog:
+            // "Game Over"
+            // "It's a draw"
+            // "Return to main menu" oder "ok"
+        }
+
+        return false;
     }
 }
