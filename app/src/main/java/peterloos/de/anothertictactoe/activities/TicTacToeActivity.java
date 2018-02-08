@@ -4,12 +4,14 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.R;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnPlayersChangedListener;
@@ -32,7 +34,6 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
     // data model
     private ITicTacToe model;
-    private String currentPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +68,6 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.model = new TicTacToeModelFirebase(this.getApplicationContext());
         this.model.setOnPlayersChangedListener(this);
         this.view.setTicTacToeModel(this.model);
-
-        this.currentPlayer = "";
     }
 
     @Override
@@ -95,30 +94,61 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     }
 
     // implementation of interface 'OnPlayersChangedListener'
+//    @Override
+//    public void playersChanged(String firstPlayer, String secondPlayer) {
+//
+//        // determine who am I :-)
+//        if (firstPlayer.equals("") && secondPlayer.equals("")) {
+//
+//            String msg = "Waiting to get paired ...";
+//            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+//        }
+//        else if (! firstPlayer.equals("") && secondPlayer.equals("")) {
+//
+//            this.currentPlayer = firstPlayer;
+//            this.textviewPlayer1.setText(firstPlayer);
+//
+//            String msg = "1. Player: " + firstPlayer + " - waiting for 2. Player ...";
+//            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+//        }
+//        else if (! firstPlayer.equals("") && ! secondPlayer.equals("")) {
+//
+//            this.currentPlayer = secondPlayer;
+//            this.textviewPlayer1.setText(firstPlayer);
+//            this.textviewPlayer2.setText(secondPlayer);
+//
+//            String msg = "1. Player: " + firstPlayer + " 2. Player: "  + secondPlayer + " - Game begins";
+//            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+//        }
+//    }
+
     @Override
     public void playersChanged(String firstPlayer, String secondPlayer) {
 
-        // determine who am I :-)
-        if (firstPlayer.equals("") && secondPlayer.equals("")) {
+        String s1 = firstPlayer.equals("") ? "EMPTY" : firstPlayer;
+        String s2 = secondPlayer.equals("") ? "EMPTY" : secondPlayer;
+        String s = String.format("%s - %s", s1, s2);
+        Log.v(Globals.Tag, s);
 
+        this.textviewPlayer1.setText(firstPlayer);
+        this.textviewPlayer2.setText(secondPlayer);
+
+        int numPlayers = 0;
+        if (! firstPlayer.equals(""))
+            numPlayers ++;
+        if (! secondPlayer.equals(""))
+            numPlayers ++;
+
+        if (numPlayers == 2) {
+            String msg = "1. Player: " + firstPlayer + "\n2. Player: "  + secondPlayer + "\n\nGame begins";
+            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        }
+        else if (numPlayers == 1) {
+            String msg = "Waiting for 2. Player ...";
+            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        }
+        else  if (numPlayers == 0) {
             String msg = "Waiting to get paired ...";
-            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        }
-        else if (! firstPlayer.equals("") && secondPlayer.equals("")) {
-
-            this.currentPlayer = firstPlayer;
-            this.textviewPlayer1.setText(firstPlayer);
-
-            String msg = "1. Player: " + firstPlayer + " - waiting for 2. Player ...";
-            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        }
-        else if (! firstPlayer.equals("") && ! secondPlayer.equals("")) {
-
-            this.currentPlayer = secondPlayer;
-            this.textviewPlayer1.setText(firstPlayer);
-            this.textviewPlayer2.setText(secondPlayer);
-
-            String msg = "1. Player: " + firstPlayer + " 2. Player: "  + secondPlayer + " - Game begins";
             Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         }
     }
