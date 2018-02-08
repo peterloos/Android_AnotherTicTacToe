@@ -12,7 +12,7 @@ public interface ITicTacToe {
     void setOnPlayersChangedListener(OnPlayersChangedListener listener);
 
     void registerPlayer (String player);
-    void unregisterPlayer (String player);
+    void unregisterPlayer ();
 
     void initGame();
     GameStone getStoneAt (int row, int col);

@@ -55,6 +55,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.textviewPlayer2 = this.findViewById(R.id.textviewPlayer2);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
         this.buttonRegister.setOnClickListener(this);
+        this.buttonUnregister.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
 
         // clear textview's upon creation
@@ -89,6 +90,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         }
         else if (view == this.buttonUnregister) {
 
+            this.model.unregisterPlayer();
         }
     }
 

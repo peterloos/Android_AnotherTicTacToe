@@ -58,7 +58,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
-    public void unregisterPlayer (String player) {
+    public void unregisterPlayer () {
 
         // TODO: TBD
     }
