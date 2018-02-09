@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -64,21 +65,36 @@ class Player {
 
     private String name;
 
-    // private final  Map<String, String> createdAt =  ServerValue.TIMESTAMP;
-    private final  Object createdAt =  ServerValue.TIMESTAMP;
+    private final Object createdAt = ServerValue.TIMESTAMP;
 
-    Object getTimestamp() {
-        return createdAt;
+    private final Map<String, String> createdAt2 = ServerValue.TIMESTAMP;
+
+    public Object getTimeStamp() {
+        return this.createdAt;
+    }
+
+    public Map<String, String> getTimeStamp2() {
+        return createdAt2;
     }
 
     @Exclude
     public long timestamp() {
-        return (long) createdAt;
+        return (long) this.createdAt;
     }
 
     public Player() {
         // default constructor required for Firebase
     }
+
+//    public static String getTimeDate(long timeStamp){
+//        try{
+//            DateFormat dateFormat = getDateTimeInstance();
+//            Date netDate = (new Date(timeStamp));
+//            return dateFormat.format(netDate);
+//        } catch(Exception e) {
+//            return "date";
+//        }
+//    }
 
     public Player(String name) {
         this.name = name;
