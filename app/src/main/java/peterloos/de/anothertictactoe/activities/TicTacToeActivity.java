@@ -14,11 +14,11 @@ import android.widget.Toast;
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.R;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
-import peterloos.de.anothertictactoe.interfaces.OnPlayersChangedListener;
+import peterloos.de.anothertictactoe.interfaces.OnPlayersConfigurationChangedListener;
 import peterloos.de.anothertictactoe.models.TicTacToeModelFirebase;
 import peterloos.de.anothertictactoe.views.TicTacToeView;
 
-public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener, OnPlayersChangedListener {
+public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener, OnPlayersConfigurationChangedListener {
 
     // UI controls
     private Button buttonRegister;
@@ -75,27 +75,25 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
         if (view == this.buttonRestart) {
             this.model.initGame();
-        }
-        else if (view == this.buttonRegister) {
+        } else if (view == this.buttonRegister) {
 
             String nickname = this.edittextNickname.getText().toString();
-            if (! nickname.equals("")) {
+            if (!nickname.equals("")) {
 
                 this.model.registerPlayer(nickname);
 
                 // clear UI
                 this.edittextNickname.setText("");
             }
-        }
-        else if (view == this.buttonUnregister) {
+        } else if (view == this.buttonUnregister) {
 
             this.model.unregisterPlayer();
         }
     }
 
-    // implementation of interface 'OnPlayersChangedListener'
+    // implementation of interface 'OnPlayersConfigurationChangedListener'
 //    @Override
-//    public void playersChanged(String firstPlayer, String secondPlayer) {
+//    public void playersNamesChanged(String firstPlayer, String secondPlayer) {
 //
 //        // determine who am I :-)
 //        if (firstPlayer.equals("") && secondPlayer.equals("")) {
@@ -123,7 +121,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 //    }
 
     @Override
-    public void playersChanged(String firstPlayer, String secondPlayer) {
+    public void playersNamesChanged(String firstPlayer, String secondPlayer) {
 
         String s1 = firstPlayer.equals("") ? "EMPTY" : firstPlayer;
         String s2 = secondPlayer.equals("") ? "EMPTY" : secondPlayer;
@@ -134,22 +132,38 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.textviewPlayer2.setText(secondPlayer);
 
         int numPlayers = 0;
-        if (! firstPlayer.equals(""))
-            numPlayers ++;
-        if (! secondPlayer.equals(""))
-            numPlayers ++;
+        if (!firstPlayer.equals(""))
+            numPlayers++;
+        if (!secondPlayer.equals(""))
+            numPlayers++;
 
         if (numPlayers == 2) {
-            String msg = "1. Player: " + firstPlayer + "\n2. Player: "  + secondPlayer + "\n\nGame begins";
+            String msg = "1. Player: " + firstPlayer + "\n2. Player: " + secondPlayer + "\n\nGame begins";
             Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        }
-        else if (numPlayers == 1) {
+        } else if (numPlayers == 1) {
             String msg = "Waiting for 2. Player ...";
             Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        }
-        else  if (numPlayers == 0) {
+        } else if (numPlayers == 0) {
             String msg = "Waiting to get paired ...";
             Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void playersActivityStateChanged(boolean firstPlayerIsActive, boolean secondPlayerIsActive) {
+
+        if (!firstPlayerIsActive && !secondPlayerIsActive) {
+
+            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
+            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
+        } else if (firstPlayerIsActive && !secondPlayerIsActive) {
+
+            this.textviewPlayer1.setBackgroundColor(Color.RED);
+            this.textviewPlayer2.setBackgroundColor(Color.GREEN);
+        } else if (!firstPlayerIsActive && secondPlayerIsActive) {
+
+            this.textviewPlayer1.setBackgroundColor(Color.GREEN);
+            this.textviewPlayer2.setBackgroundColor(Color.RED);
         }
     }
 }

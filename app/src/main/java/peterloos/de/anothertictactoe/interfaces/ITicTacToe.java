@@ -9,7 +9,7 @@ import peterloos.de.anothertictactoe.models.GameStone;
 public interface ITicTacToe {
 
     void setOnBoardChangedListener (OnBoardChangedListener listener);
-    void setOnPlayersChangedListener(OnPlayersChangedListener listener);
+    void setOnPlayersChangedListener(OnPlayersConfigurationChangedListener listener);
 
     void registerPlayer (String player);
     void unregisterPlayer ();

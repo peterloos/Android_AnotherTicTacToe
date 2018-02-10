@@ -8,7 +8,7 @@ import java.util.Locale;
 
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
-import peterloos.de.anothertictactoe.interfaces.OnPlayersChangedListener;
+import peterloos.de.anothertictactoe.interfaces.OnPlayersConfigurationChangedListener;
 
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
@@ -27,7 +27,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
 
     // listeners
     private OnBoardChangedListener boardListener;
-    private OnPlayersChangedListener playersListener;
+    private OnPlayersConfigurationChangedListener playersListener;
 
     // c'tor
     public TicTacToeModelOffline(Context context) {
@@ -46,7 +46,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
-    public void setOnPlayersChangedListener(OnPlayersChangedListener listener) {
+    public void setOnPlayersChangedListener(OnPlayersConfigurationChangedListener listener) {
 
         this.playersListener = listener;
     }

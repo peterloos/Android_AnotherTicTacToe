@@ -5,5 +5,12 @@ package peterloos.de.anothertictactoe.models;
  */
 
 public enum GameState {
-    Active, Inactive
+
+    // TODO: Active wird derzeit nur im OFFLINE verwendet -
+    // TODO: Vielleicht kann man das auch ändern ?!?!?!
+    Active, Inactive, ActiveIsMe, ActiveIsOther
 }
+
+// TODO 2:  Noch 2 STates einführen: ActiveIsMeAndClickedOnStone
+// Soll heißen: Bis von der Cloud die Bestätigng kommt, sollte das Brett inaktiv sein
+// Ich muss aber wissen wer gecklickt hat ...
