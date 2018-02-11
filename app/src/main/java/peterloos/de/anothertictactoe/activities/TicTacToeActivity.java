@@ -74,7 +74,9 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View view) {
 
         if (view == this.buttonRestart) {
-            this.model.initGame();
+
+            this.model.restartGame();
+
         } else if (view == this.buttonRegister) {
 
             String nickname = this.edittextNickname.getText().toString();
@@ -92,34 +94,6 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     }
 
     // implementation of interface 'OnPlayersConfigurationChangedListener'
-//    @Override
-//    public void playersNamesChanged(String firstPlayer, String secondPlayer) {
-//
-//        // determine who am I :-)
-//        if (firstPlayer.equals("") && secondPlayer.equals("")) {
-//
-//            String msg = "Waiting to get paired ...";
-//            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-//        }
-//        else if (! firstPlayer.equals("") && secondPlayer.equals("")) {
-//
-//            this.currentPlayer = firstPlayer;
-//            this.textviewPlayer1.setText(firstPlayer);
-//
-//            String msg = "1. Player: " + firstPlayer + " - waiting for 2. Player ...";
-//            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-//        }
-//        else if (! firstPlayer.equals("") && ! secondPlayer.equals("")) {
-//
-//            this.currentPlayer = secondPlayer;
-//            this.textviewPlayer1.setText(firstPlayer);
-//            this.textviewPlayer2.setText(secondPlayer);
-//
-//            String msg = "1. Player: " + firstPlayer + " 2. Player: "  + secondPlayer + " - Game begins";
-//            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-//        }
-//    }
-
     @Override
     public void playersNamesChanged(String firstPlayer, String secondPlayer) {
 

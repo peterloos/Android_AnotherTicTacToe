@@ -31,7 +31,6 @@
             android:id="@+id/textviewNickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar"
             android:textSize="18sp"
             android:text="Nickname:" android:textStyle="normal|bold" />
 
@@ -39,7 +38,6 @@
             android:id="@+id/edittextNickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar"
             android:text=""/>
 
     </LinearLayout>
@@ -63,10 +61,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar"
             android:textAlignment="textStart"
             android:layout_gravity="start"
-            android:text="Hans"
             android:textSize="18sp"
             android:textStyle="normal|italic" />
 
@@ -75,10 +71,8 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar"
             android:textAlignment="textEnd"
             android:layout_gravity="end"
-            android:text="Georg"
             android:textSize="18sp"
             android:textStyle="normal|italic" />
 
@@ -96,7 +90,6 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar"
             android:textAlignment="textStart"
             android:layout_gravity="start"
             android:text="Score: 0"
@@ -107,7 +100,6 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_toolbar"
             android:textAlignment="textEnd"
             android:layout_gravity="end"
             android:text="Score: 0"

@@ -34,7 +34,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
 
         this.context = context;
         this.board = new GameStone[Dimension][Dimension];
-        this.initGame();
+        this.startGame();
     }
 
     // implementation of interface 'ITicTacToe'
@@ -64,7 +64,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
-    public void initGame() {
+    public void startGame() {
 
         for (int i = 0; i < Dimension; i++) {
             for (int j = 0; j < Dimension; j++) {
@@ -81,6 +81,13 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
+    public void restartGame() {
+
+        // TODO:
+        // probably to be done
+    }
+
+        @Override
     public GameStone getStoneAt(int row, int col) {
 
         return this.board[row][col];

@@ -14,7 +14,10 @@ public interface ITicTacToe {
     void registerPlayer (String player);
     void unregisterPlayer ();
 
-    void initGame();
     GameStone getStoneAt (int row, int col);
     boolean setStone(int row, int col);
+
+    void startGame();
+    void restartGame();
 }
+
