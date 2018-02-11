@@ -17,7 +17,8 @@ public interface ITicTacToe {
     GameStone getStoneAt (int row, int col);
     boolean setStone(int row, int col);
 
-    void startGame();
+    // void startGame();
+    void clearBoard();
     void restartGame();
 }
 

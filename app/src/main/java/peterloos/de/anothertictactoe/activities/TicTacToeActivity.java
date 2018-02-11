@@ -23,6 +23,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     // UI controls
     private Button buttonRegister;
     private Button buttonUnregister;
+    private Button buttonClear;
     private Button buttonRestart;
 
     private EditText edittextNickname;
@@ -55,8 +56,11 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.textviewPlayer1 = this.findViewById(R.id.textviewPlayer1);
         this.textviewPlayer2 = this.findViewById(R.id.textviewPlayer2);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
+        this.buttonClear = this.findViewById(R.id.buttonClear);
+
         this.buttonRegister.setOnClickListener(this);
         this.buttonUnregister.setOnClickListener(this);
+        this.buttonClear.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
 
         // clear textview's upon creation
@@ -73,11 +77,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View view) {
 
-        if (view == this.buttonRestart) {
-
-            this.model.restartGame();
-
-        } else if (view == this.buttonRegister) {
+        if (view == this.buttonRegister) {
 
             String nickname = this.edittextNickname.getText().toString();
             if (!nickname.equals("")) {
@@ -90,6 +90,14 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         } else if (view == this.buttonUnregister) {
 
             this.model.unregisterPlayer();
+        } else if (view == this.buttonClear) {
+
+            this.model.clearBoard();
+
+        } else if (view == this.buttonRestart) {
+
+            this.model.restartGame();
+
         }
     }
 

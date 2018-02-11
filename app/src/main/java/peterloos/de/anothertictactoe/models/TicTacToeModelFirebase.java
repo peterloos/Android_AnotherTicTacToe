@@ -182,7 +182,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.refPlayers = database.getReference("players");
         this.refPlayers.addChildEventListener(this.childEventListener);
 
-        this.startGame();
+        this.clearBoard();
     }
 
     // implementation of interface 'ITicTacToe'
@@ -221,7 +221,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     }
 
     @Override
-    public void startGame() {
+    public void clearBoard() {
 
         // need at first an cleared hash map
         for (int row = 1; row <= Dimension; row++) {
@@ -232,54 +232,69 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
 
         // now initialize remote database
-        // GEHT --- HABE ES ABER MIT DEM AUFRUF von clearAllStonesRemote IN EINEM AUFWASCH GEMACHT !!!
-//        for (int row = 1; row <= Dimension; row++) {
-//            for (int col = 1; col <= Dimension; col++) {
-//                this.setSingleStoneRemote(row, col, GameStone.Empty);
-//            }
-//        }
         this.clearAllStonesRemote();
 
+        // notify view(s)
         if (this.boardListener != null) {
             this.boardListener.clearBoard();
         }
     }
 
     @Override
+//    public void restartGame() {
+//
+//        // compute who begins to play
+//        if (this.wonLastGame) {
+//
+//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsOther;
+//            TicTacToeModelFirebase.this.stone = GameStone.O;
+//        } else {
+//
+//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsMe;
+//            TicTacToeModelFirebase.this.stone = GameStone.X;
+//        }
+//
+//        String info = "";
+//        if (this.gameState == GameState.ActiveIsMe) {
+//            info = "Player " + this.playerNames[1] + " begins !!!";
+//        } else if (this.gameState == GameState.ActiveIsOther) {
+//            info = "Player " + this.playerNames[0] + " begins !!!";
+//        }
+//        Toast.makeText(this.context, info, Toast.LENGTH_SHORT).show();
+//
+//        // fire notification according to players state
+//        if (this.playersListener != null) {
+//
+//            if (this.wonLastGame) {
+//
+//                this.playersListener.playersActivityStateChanged(false, true);
+//            }
+//            else {
+//
+//                this.playersListener.playersActivityStateChanged(true, false);
+//            }
+//        }
+//    }
+
+
     public void restartGame() {
 
-        this.startGame();
-
-        // compute who begins to play
-        if (this.wonLastGame) {
-
-            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsOther;
-            TicTacToeModelFirebase.this.stone = GameStone.O;
-        } else {
+        if (TicTacToeModelFirebase.this.playerTimestamps[0] < TicTacToeModelFirebase.this.playerTimestamps[1]) {
 
             TicTacToeModelFirebase.this.gameState = GameState.ActiveIsMe;
             TicTacToeModelFirebase.this.stone = GameStone.X;
+        } else {
+
+            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsOther;
+            TicTacToeModelFirebase.this.stone = GameStone.O;
         }
 
-        String info = "";
-        if (this.gameState == GameState.ActiveIsMe) {
-            info = "Player " + this.playerNames[1] + " begins !!!";
-        } else if (this.gameState == GameState.ActiveIsOther) {
-            info = "Player " + this.playerNames[0] + " begins !!!";
-        }
-        Toast.makeText(this.context, info, Toast.LENGTH_SHORT).show();
+        // fire notification
+        if (TicTacToeModelFirebase.this.playersListener != null) {
 
-        // fire notification according to players state
-        if (this.playersListener != null) {
-
-            if (this.wonLastGame) {
-
-                this.playersListener.playersActivityStateChanged(false, true);
-            }
-            else {
-
-                this.playersListener.playersActivityStateChanged(true, false);
-            }
+            TicTacToeModelFirebase.this.playersListener.playersNamesChanged
+                    (TicTacToeModelFirebase.this.playerNames[0],
+                            TicTacToeModelFirebase.this.playerNames[1]);
         }
     }
 

@@ -42,18 +42,36 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonRegister"
+    <LinearLayout
+        android:id="@+id/register_unregister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/nickname"
-        android:text="Register" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonRegister"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/nickname"
+            android:text="Register" />
+
+        <Button
+            android:id="@+id/buttonUnregister"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Unregister" />
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/linearlayoutPlayers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonRegister"
+        android:layout_below="@+id/register_unregister"
         android:orientation="horizontal">
 
         <TextView
@@ -122,18 +140,18 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/buttonClear"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Clear" />
+
+        <Button
             android:id="@+id/buttonRestart"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Another Game?" />
-
-        <Button
-            android:id="@+id/buttonUnregister"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Unregister" />
+            android:text="Another Game" />
 
     </LinearLayout>
 
