@@ -1,6 +1,11 @@
 package peterloos.de.anothertictactoe.activities;
 
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -147,5 +152,22 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
             this.textviewPlayer1.setBackgroundColor(Color.GREEN);
             this.textviewPlayer2.setBackgroundColor(Color.RED);
         }
+
+        // trying to change the background color
+        Drawable background = this.textviewPlayer1.getBackground();
+        if (background instanceof ShapeDrawable) {
+            // cast to 'ShapeDrawable'
+            ShapeDrawable shapeDrawable = (ShapeDrawable) background;
+            shapeDrawable.getPaint().setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
+        } else if (background instanceof GradientDrawable) {
+            // cast to 'GradientDrawable'
+            GradientDrawable gradientDrawable = (GradientDrawable) background;
+            gradientDrawable.setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
+        } else if (background instanceof ColorDrawable) {
+            // alpha value may need to be set again after this call
+            ColorDrawable colorDrawable = (ColorDrawable) background;
+            colorDrawable.setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
+        }
+
     }
 }
