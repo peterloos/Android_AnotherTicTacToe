@@ -13,11 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import peterloos.de.anothertictactoe.Globals;
@@ -561,21 +557,33 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
     private void clearAllStonesRemote() {
 
-        Board board = new Board();
+        Map<String, Object> xxx = new HashMap<>();
 
-        Col col = new Col ();
-        col.setState("Empty");
+        Map<String, String> col1 = new HashMap<>();
+        col1.put("state", "Empty");
+        Map<String, String> col2 = new HashMap<>();
+        col2.put("state", "Empty");
+        Map<String, String> col3 = new HashMap<>();
+        col3.put("state", "Empty");
 
-        Row row = new Row();
-        row.setCol1(col);
-        row.setCol2(col);
-        row.setCol3(col);
+        Map<String, Object> row1 = new HashMap<>();
+        row1.put("col1", col1);
+        row1.put("col2", col2);
+        row1.put("col3", col3);
+        Map<String, Object> row2 = new HashMap<>();
+        row2.put("col1", col1);
+        row2.put("col2", col2);
+        row2.put("col3", col3);
+        Map<String, Object> row3 = new HashMap<>();
+        row3.put("col1", col1);
+        row3.put("col2", col2);
+        row3.put("col3", col3);
 
-        board.setRow1(row);
-        board.setRow2(row);
-        board.setRow3(row);
+        xxx.put("row1", row1);
+        xxx.put("row2", row2);
+        xxx.put("row3", row3);
 
-        this.refBoard.setValue (board);
+        this.refBoard.setValue(xxx);
     }
 
     private boolean checkForEndOfGame(GameStone stone) {
@@ -646,82 +654,4 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
         return false;
     }
-
-
-    public static class Board {
-
-        private Row row1;
-        private Row row2;
-        private Row row3;
-
-        public Row getRow1() {
-            return row1;
-        }
-
-        public void setRow1(Row row1) {
-            this.row1 = row1;
-        }
-
-        public Row getRow2() {
-            return row2;
-        }
-
-        public void setRow2(Row row2) {
-            this.row2 = row2;
-        }
-
-        public Row getRow3() {
-            return row3;
-        }
-
-        public void setRow3(Row row3) {
-            this.row3 = row3;
-        }
-    }
-
-    public static class Row {
-
-        private Col col1;
-        private Col col2;
-        private Col col3;
-
-        public Col getCol1() {
-            return col1;
-        }
-
-        public void setCol1(Col col1) {
-            this.col1 = col1;
-        }
-
-        public Col getCol2() {
-            return col2;
-        }
-
-        public void setCol2(Col col2) {
-            this.col2 = col2;
-        }
-
-        public Col getCol3() {
-            return col3;
-        }
-
-        public void setCol3(Col col3) {
-            this.col3 = col3;
-        }
-    }
-
-    public static class Col {
-
-        private String state;
-
-        public String getState() {
-            return state;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-    }
-
-
 }
