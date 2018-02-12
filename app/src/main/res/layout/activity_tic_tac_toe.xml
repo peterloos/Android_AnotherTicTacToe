@@ -183,6 +183,13 @@
             android:layout_height="wrap_content"
             android:text="Another Game" />
 
+        <Button
+            android:id="@+id/buttonXXXXXXX"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="TEST" />
+
     </LinearLayout>
 
 </RelativeLayout>

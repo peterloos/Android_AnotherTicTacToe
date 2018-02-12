@@ -10,11 +10,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.microedition.khronos.opengles.GL;
 
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
@@ -557,7 +561,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
     private void clearAllStonesRemote() {
 
-        Map<String, Object> xxx = new HashMap<>();
+        Map<String, Object> board = new HashMap<>();
 
         Map<String, String> col1 = new HashMap<>();
         col1.put("state", "Empty");
@@ -570,20 +574,22 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         row1.put("col1", col1);
         row1.put("col2", col2);
         row1.put("col3", col3);
+
         Map<String, Object> row2 = new HashMap<>();
         row2.put("col1", col1);
         row2.put("col2", col2);
         row2.put("col3", col3);
+
         Map<String, Object> row3 = new HashMap<>();
         row3.put("col1", col1);
         row3.put("col2", col2);
         row3.put("col3", col3);
 
-        xxx.put("row1", row1);
-        xxx.put("row2", row2);
-        xxx.put("row3", row3);
+        board.put("row1", row1);
+        board.put("row2", row2);
+        board.put("row3", row3);
 
-        this.refBoard.setValue(xxx);
+        this.refBoard.setValue(board);
     }
 
     private boolean checkForEndOfGame(GameStone stone) {
@@ -653,5 +659,38 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
 
         return false;
+    }
+
+    public void XXX() {
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("state").child("num_players");
+
+        ref.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+
+                Object o = mutableData.getValue(int.class);
+                if (o == null) {
+                    Log.v(Globals.Tag, "mutableData == null ?!?!?!?");
+                    return Transaction.success(mutableData);
+                }
+
+                int currentValue = mutableData.getValue(int.class);
+                mutableData.setValue(currentValue + 1);
+                Log.v(Globals.Tag, "doTransaction now worked !!!");
+
+                Player player = new Player("Name_" + Integer.toString(currentValue));
+                TicTacToeModelFirebase.this.refPlayers.push().setValue(player);
+
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+                // Transaction completed
+                Log.v(Globals.Tag, "onComplete " + Boolean.toString(b));
+            }
+        });
     }
 }

@@ -31,6 +31,8 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     private Button buttonClear;
     private Button buttonRestart;
 
+    private Button buttonXXXXXXX;
+
     private EditText edittextNickname;
     private TextView textviewPlayer1;
     private TextView textviewPlayer2;
@@ -68,6 +70,12 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.buttonClear.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
 
+
+        // NUR ZUM TESTEN
+        this.buttonXXXXXXX = this.findViewById(R.id.buttonXXXXXXX);
+        this.buttonXXXXXXX.setOnClickListener(this);
+
+
         // clear textview's upon creation
         this.textviewPlayer1.setText("---------------");
         this.textviewPlayer2.setText("---------------");
@@ -103,6 +111,11 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
             this.model.restartGame();
 
+        }
+        else if (view == this.buttonXXXXXXX) {
+
+            this.model.XXX();
+            Toast.makeText(this.getApplicationContext(), "Yeahhhhhhhhhhhhhhhhhh", Toast.LENGTH_SHORT).show();
         }
     }
 
