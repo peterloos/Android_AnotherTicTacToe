@@ -18,8 +18,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.microedition.khronos.opengles.GL;
-
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
@@ -661,27 +659,36 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         return false;
     }
 
-    public void XXX() {
+    public void test01() {
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("state").child("num_players");
 
         ref.runTransaction(new Transaction.Handler() {
+
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
 
+                Log.v(Globals.Tag, ">>> doTransaction");
+
                 Object o = mutableData.getValue(int.class);
                 if (o == null) {
-                    Log.v(Globals.Tag, "mutableData == null ?!?!?!?");
+                    Log.v(Globals.Tag, "!!! doTransaction - mutableData == null ?!?!?!?");
                     return Transaction.success(mutableData);
                 }
 
                 int currentValue = mutableData.getValue(int.class);
-                mutableData.setValue(currentValue + 1);
+
+                String msg = String.format("doTransaction --> currentValue ==> %d", currentValue);
+                Log.v(Globals.Tag, msg);
+
+                currentValue ++;
+                mutableData.setValue(currentValue);
                 Log.v(Globals.Tag, "doTransaction now worked !!!");
 
-                Player player = new Player("Name_" + Integer.toString(currentValue));
-                TicTacToeModelFirebase.this.refPlayers.push().setValue(player);
+//                Player player = new Player("Name_" + Integer.toString(currentValue));
+//                TicTacToeModelFirebase.this.refPlayers.push().setValue(player);
 
+                Log.v(Globals.Tag, "<<< doTransaction");
                 return Transaction.success(mutableData);
             }
 
@@ -689,7 +696,12 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
                 // Transaction completed
-                Log.v(Globals.Tag, "onComplete " + Boolean.toString(b));
+                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
+
+                int finalValue = dataSnapshot.getValue(int.class);
+
+                String msg = String.format("onComplete  --> finalValue ==> %d", finalValue);
+                Log.v(Globals.Tag, msg);
             }
         });
     }

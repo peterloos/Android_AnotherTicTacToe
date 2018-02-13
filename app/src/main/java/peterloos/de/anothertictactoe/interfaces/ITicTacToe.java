@@ -21,6 +21,6 @@ public interface ITicTacToe {
     void clearBoard();
     void restartGame();
 
-    void XXX();
+    void test01();
 }
 

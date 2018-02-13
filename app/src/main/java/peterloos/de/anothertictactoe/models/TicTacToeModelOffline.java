@@ -186,7 +186,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     // TODO: Wieder entfernen !!!!!!!!!!!!!!!!!!!!!!!!!
-    public void XXX() {
+    public void test01() {
 
     }
 }

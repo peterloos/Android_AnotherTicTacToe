@@ -114,7 +114,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         }
         else if (view == this.buttonXXXXXXX) {
 
-            this.model.XXX();
+            this.model.test01();
             Toast.makeText(this.getApplicationContext(), "Yeahhhhhhhhhhhhhhhhhh", Toast.LENGTH_SHORT).show();
         }
     }
