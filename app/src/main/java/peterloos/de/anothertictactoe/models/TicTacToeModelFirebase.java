@@ -103,12 +103,43 @@ class Player {
     }
 }
 
+class State
+{
+    private String status;
+    private int numberPlayers;
+
+    // getter/setter
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getNumberPlayers() {
+
+        return numberPlayers;
+    }
+
+    public void setNumberPlayers(int numberPlayers) {
+
+        this.numberPlayers = numberPlayers;
+    }
+
+    @Override
+    public String toString() {
+        return "Status: " + this.status + ", Number of Players: " + numberPlayers;
+    }
+}
+
 public class TicTacToeModelFirebase implements ITicTacToe {
 
     // Firebase utils
     private FirebaseDatabase database;
     private DatabaseReference refBoard;
     private DatabaseReference refPlayers;
+    private DatabaseReference refState;
 
     // general member data
     private Context context;
@@ -156,16 +187,15 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         // init access to database
         this.database = FirebaseDatabase.getInstance();
         this.refBoard = database.getReference("board");
+        this.refPlayers = database.getReference("players");
+        this.refState = this.database.getReference("state");
 
         // setup listener object for 'value changed' events
         this.valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if (dataSnapshot.exists()) {
-
-                    TicTacToeModelFirebase.this.evaluateBoardSnapshot(dataSnapshot);
-                }
+                TicTacToeModelFirebase.this.evaluateBoardSnapshot(dataSnapshot);
             }
 
             @Override
@@ -175,10 +205,22 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                 Log.w(Globals.Tag, "Failed to read value.", error.toException());
             }
         };
-        this.refBoard.addValueEventListener(this.valueEventListener);
 
-        this.refPlayers = database.getReference("players");
+        this.refBoard.addValueEventListener(this.valueEventListener);
         this.refPlayers.addChildEventListener(this.childEventListener);
+
+        this.refState.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                TicTacToeModelFirebase.this.evaluateStateSnapshot(dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         this.clearBoard();
     }
@@ -305,8 +347,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             Player player = dataSnapshot.getValue(Player.class);
             String name = player.getName();
 
-            TicTacToeModelFirebase.this.numPlayers++;
-
             Log.d(Globals.Tag, "onChildAdded: " + player.toString() + " [" + dataSnapshot.getKey() + "]");
 
             if (TicTacToeModelFirebase.this.currentPlayer.equals(name)) {
@@ -354,8 +394,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             // removing a player
             Player player = dataSnapshot.getValue(Player.class);
             String name = player.getName();
-
-            TicTacToeModelFirebase.this.numPlayers--;
 
             Log.d(Globals.Tag, "onChildRemoved: " + name + " [" + dataSnapshot.getKey() + "]");
 
@@ -429,7 +467,22 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     }
 
     // private helper methods
+    private void evaluateStateSnapshot(DataSnapshot dataSnapshot) {
+
+        if (! dataSnapshot.exists()) {
+            return;
+        }
+
+        State state = dataSnapshot.getValue(State.class);
+        String msg = String.format("evaluateStateSnapshot  ==> State: %s", state.toString());
+        Log.v(Globals.Tag, msg);
+    }
+
     private void evaluateBoardSnapshot(DataSnapshot dataSnapshot) {
+
+        if (! dataSnapshot.exists()) {
+            return;
+        }
 
         for (DataSnapshot data : dataSnapshot.getChildren()) {
 
@@ -670,19 +723,19 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                 Log.v(Globals.Tag, ">>> doTransaction");
 
-                Object o = mutableData.getValue(int.class);
+                Object o = mutableData.getValue(State.class);
                 if (o == null) {
                     Log.v(Globals.Tag, "!!! doTransaction - mutableData == null ?!?!?!?");
                     return Transaction.success(mutableData);
                 }
 
-                int currentValue = mutableData.getValue(int.class);
+                State state = mutableData.getValue(State.class);
 
-                String msg = String.format("doTransaction --> currentValue ==> %d", currentValue);
+                String msg = String.format("doTransaction --> currentValue ==> %d", state.getNumberPlayers());
                 Log.v(Globals.Tag, msg);
 
-                currentValue ++;
-                mutableData.setValue(currentValue);
+                state.setNumberPlayers(state.getNumberPlayers() + 1);
+                mutableData.setValue(state);
                 Log.v(Globals.Tag, "doTransaction now worked !!!");
 
 //                Player player = new Player("Name_" + Integer.toString(currentValue));
@@ -695,12 +748,20 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
+//                // Transaction completed
+//                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
+//
+//                int finalValue = dataSnapshot.getValue(int.class);
+//
+//                String msg = String.format("onComplete  --> finalValue ==> %d", finalValue);
+//                Log.v(Globals.Tag, msg);
+
                 // Transaction completed
                 Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
 
-                int finalValue = dataSnapshot.getValue(int.class);
+                State state = dataSnapshot.getValue(State.class);
 
-                String msg = String.format("onComplete  --> finalValue ==> %d", finalValue);
+                String msg = String.format("onComplete  --> finalValue ==> %d", state.getNumberPlayers());
                 Log.v(Globals.Tag, msg);
             }
         });
