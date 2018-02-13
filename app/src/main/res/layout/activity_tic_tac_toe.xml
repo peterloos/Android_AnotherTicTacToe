@@ -59,19 +59,19 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonRegister"
+            android:id="@+id/buttonEnter"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_below="@+id/nickname"
-            android:text="Register" />
+            android:text="Enter" />
 
         <Button
-            android:id="@+id/buttonUnregister"
+            android:id="@+id/buttonLeave"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Unregister" />
+            android:text="Leave" />
 
     </LinearLayout>
 

@@ -26,8 +26,8 @@ import peterloos.de.anothertictactoe.views.TicTacToeView;
 public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener, OnPlayersConfigurationChangedListener {
 
     // UI controls
-    private Button buttonRegister;
-    private Button buttonUnregister;
+    private Button buttonEnter;
+    private Button buttonLeave;
     private Button buttonClear;
     private Button buttonRestart;
 
@@ -57,16 +57,16 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
         // retrieve references of controls
         this.view = this.findViewById(R.id.tictactoeView);
-        this.buttonRegister = this.findViewById(R.id.buttonRegister);
-        this.buttonUnregister = this.findViewById(R.id.buttonUnregister);
+        this.buttonEnter = this.findViewById(R.id.buttonEnter);
+        this.buttonLeave = this.findViewById(R.id.buttonLeave);
         this.edittextNickname = this.findViewById(R.id.edittextNickname);
         this.textviewPlayer1 = this.findViewById(R.id.textviewPlayer1);
         this.textviewPlayer2 = this.findViewById(R.id.textviewPlayer2);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
         this.buttonClear = this.findViewById(R.id.buttonClear);
 
-        this.buttonRegister.setOnClickListener(this);
-        this.buttonUnregister.setOnClickListener(this);
+        this.buttonEnter.setOnClickListener(this);
+        this.buttonLeave.setOnClickListener(this);
         this.buttonClear.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
 
@@ -90,19 +90,19 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View view) {
 
-        if (view == this.buttonRegister) {
+        if (view == this.buttonEnter) {
 
             String nickname = this.edittextNickname.getText().toString();
             if (!nickname.equals("")) {
 
-                this.model.registerPlayer(nickname);
+                this.model.enterPlayer(nickname);
 
                 // clear UI
                 this.edittextNickname.setText("");
             }
-        } else if (view == this.buttonUnregister) {
+        } else if (view == this.buttonLeave) {
 
-            this.model.unregisterPlayer();
+            this.model.leavePlayer();
         } else if (view == this.buttonClear) {
 
             this.model.clearBoard();
@@ -112,11 +112,11 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
             this.model.restartGame();
 
         }
-        else if (view == this.buttonXXXXXXX) {
-
-            this.model.test01();
-            Toast.makeText(this.getApplicationContext(), "Yeahhhhhhhhhhhhhhhhhh", Toast.LENGTH_SHORT).show();
-        }
+//        else if (view == this.buttonXXXXXXX) {
+//
+//            this.model.enterPlayer();
+//            Toast.makeText(this.getApplicationContext(), "Yeahhhhhhhhhhhhhhhhhh", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     // implementation of interface 'OnPlayersConfigurationChangedListener'

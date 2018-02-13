@@ -11,8 +11,8 @@ public interface ITicTacToe {
     void setOnBoardChangedListener (OnBoardChangedListener listener);
     void setOnPlayersChangedListener(OnPlayersConfigurationChangedListener listener);
 
-    void registerPlayer (String player);
-    void unregisterPlayer ();
+    void enterPlayer (String player);
+    void leavePlayer ();
 
     GameStone getStoneAt (int row, int col);
     boolean setStone(int row, int col);
@@ -21,6 +21,6 @@ public interface ITicTacToe {
     void clearBoard();
     void restartGame();
 
-    void test01();
+    // void test01();
 }
 

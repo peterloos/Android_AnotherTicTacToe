@@ -65,6 +65,7 @@ class Player {
 
     private String name;
     private long creationDate;
+    private String key;
 
     // c'tors
     public Player() {
@@ -101,12 +102,26 @@ class Player {
     public String toString() {
         return "Name: " + this.name;
     }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 }
 
 class State
 {
     private String status;
-    private int numberPlayers;
+    private int numberPlayers;   // TODO: Obsolet
+    private int ticketNumber;
+
+    // c'tors
+    public State() {
+        // default constructor required for Firebase
+    }
 
     // getter/setter
     public String getStatus() {
@@ -115,6 +130,14 @@ class State
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getTicketNumber() {
+        return ticketNumber;
+    }
+
+    public void setTicketNumber(int ticketNumber) {
+        this.ticketNumber = ticketNumber;
     }
 
     public int getNumberPlayers() {
@@ -129,7 +152,7 @@ class State
 
     @Override
     public String toString() {
-        return "Status: " + this.status + ", Number of Players: " + numberPlayers;
+        return "Status: " + this.status + ", Ticket Number: " + this.ticketNumber;
     }
 }
 
@@ -240,19 +263,23 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     }
 
     @Override
-    public void registerPlayer(String name) {
+    public void enterPlayer(String name) {
+
 
         if (this.currentPlayer.equals("")) {
 
             this.currentPlayer = name;
 
-            Player player = new Player(name);
-            this.refPlayers.push().setValue(player);
+            this.tryEnterRoom(name);
+
+//            Player player = new Player(name);
+//            this.refPlayers.push().setValue(player);
         }
     }
 
+
     @Override
-    public void unregisterPlayer() {
+    public void leavePlayer() {
 
         if (!this.currentPlayer.equals("")) {
 
@@ -712,58 +739,131 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         return false;
     }
 
-    public void test01() {
+//    public void test01() {
+//
+//        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("state").child("num_players");
+//
+//        ref.runTransaction(new Transaction.Handler() {
+//
+//            @Override
+//            public Transaction.Result doTransaction(MutableData mutableData) {
+//
+//                Log.v(Globals.Tag, ">>> doTransaction");
+//
+//                Object o = mutableData.getValue(State.class);
+//                if (o == null) {
+//                    Log.v(Globals.Tag, "!!! doTransaction - mutableData == null ?!?!?!?");
+//                    return Transaction.success(mutableData);
+//                }
+//
+//                State state = mutableData.getValue(State.class);
+//
+//                String msg = String.format("doTransaction --> currentValue ==> %d", state.getNumberPlayers());
+//                Log.v(Globals.Tag, msg);
+//
+//                state.setNumberPlayers(state.getNumberPlayers() + 1);
+//                mutableData.setValue(state);
+//                Log.v(Globals.Tag, "doTransaction now worked !!!");
+//
+////                Player player = new Player("Name_" + Integer.toString(currentValue));
+////                TicTacToeModelFirebase.this.refPlayers.push().setValue(player);
+//
+//                Log.v(Globals.Tag, "<<< doTransaction");
+//                return Transaction.success(mutableData);
+//            }
+//
+//            @Override
+//            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+//
+////                // Transaction completed
+////                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
+////
+////                int finalValue = dataSnapshot.getValue(int.class);
+////
+////                String msg = String.format("onComplete  --> finalValue ==> %d", finalValue);
+////                Log.v(Globals.Tag, msg);
+//
+//                // Transaction completed
+//                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
+//
+//                State state = dataSnapshot.getValue(State.class);
+//
+//                String msg = String.format("onComplete  --> finalValue ==> %d", state.getNumberPlayers());
+//                Log.v(Globals.Tag, msg);
+//            }
+//        });
+//    }
 
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("state").child("num_players");
+    public void tryEnterRoom (final String nickname) {
 
+        DatabaseReference ref = this.refState;
         ref.runTransaction(new Transaction.Handler() {
 
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
-
-                Log.v(Globals.Tag, ">>> doTransaction");
-
                 Object o = mutableData.getValue(State.class);
                 if (o == null) {
-                    Log.v(Globals.Tag, "!!! doTransaction - mutableData == null ?!?!?!?");
                     return Transaction.success(mutableData);
                 }
 
                 State state = mutableData.getValue(State.class);
-
-                String msg = String.format("doTransaction --> currentValue ==> %d", state.getNumberPlayers());
+                String msg = String.format("doTransaction --> currentValue ==> %d", state.getTicketNumber());
                 Log.v(Globals.Tag, msg);
 
-                state.setNumberPlayers(state.getNumberPlayers() + 1);
-                mutableData.setValue(state);
-                Log.v(Globals.Tag, "doTransaction now worked !!!");
+                int ticketNumber = state.getTicketNumber();
 
-//                Player player = new Player("Name_" + Integer.toString(currentValue));
-//                TicTacToeModelFirebase.this.refPlayers.push().setValue(player);
+                if (ticketNumber >= 2) {
 
-                Log.v(Globals.Tag, "<<< doTransaction");
-                return Transaction.success(mutableData);
+                    String info = "Sorry - There are still 2 players in the room!";
+                    Log.v(Globals.Tag, info);
+                    return Transaction.abort();
+
+                } else {
+                    state.setTicketNumber(state.getTicketNumber() + 1);
+                    mutableData.setValue(state);
+                    return Transaction.success(mutableData);
+                }
             }
 
             @Override
-            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
 
-//                // Transaction completed
-//                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
-//
-//                int finalValue = dataSnapshot.getValue(int.class);
-//
-//                String msg = String.format("onComplete  --> finalValue ==> %d", finalValue);
-//                Log.v(Globals.Tag, msg);
+                // transaction completed
+                if (committed) {
 
-                // Transaction completed
-                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
+                    State state = dataSnapshot.getValue(State.class);
+                    int ticketNumber = state.getTicketNumber();
 
-                State state = dataSnapshot.getValue(State.class);
+                    if (ticketNumber == 1 || ticketNumber == 2) {
 
-                String msg = String.format("onComplete  --> finalValue ==> %d", state.getNumberPlayers());
-                Log.v(Globals.Tag, msg);
+                        // let player enter into room
+                        String info = "Player " + nickname + " NOW ENTERS THE ROOM :-)";
+                        Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
+                        Log.v(Globals.Tag, info);
+
+                        TicTacToeModelFirebase.this.addPlayer(nickname);
+                    } else {
+
+                        String info = "Sorry - There are still 2 players in the room!";
+                        Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
+                        Log.v(Globals.Tag, info);
+                    }
+                } else {
+
+                    String info = "Transaction has probably been aborted !!!!!!!!!!!!";
+                    Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
+                    Log.v(Globals.Tag, info);
+                }
             }
         });
+    }
+
+    private void addPlayer(String name) {
+
+        DatabaseReference playersRef = this.refPlayers.push();
+        Player player = new Player();
+        player.setName(name);
+        player.setKey(playersRef.getKey());
+        playersRef.setValue(player);
     }
 }
