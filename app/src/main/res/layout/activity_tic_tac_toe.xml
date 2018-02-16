@@ -37,7 +37,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:text="Nickname:" android:textStyle="normal|bold" />
+            android:text="Nickname:"
+            android:textStyle="normal|bold" />
 
         <EditText
             android:id="@+id/edittextNickname"
@@ -94,7 +95,7 @@
             android:background="@drawable/rounded_corner"
             android:textAlignment="textStart"
             android:layout_gravity="start"
-            android:textSize="28sp" />
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/textviewEmptySpace"
@@ -110,7 +111,7 @@
             android:background="@drawable/rounded_corner"
             android:textAlignment="textEnd"
             android:layout_gravity="end"
-            android:textSize="28sp" />
+            android:textSize="20sp" />
 
     </LinearLayout>
 

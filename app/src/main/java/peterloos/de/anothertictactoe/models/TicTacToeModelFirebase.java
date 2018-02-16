@@ -182,6 +182,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     private int[] playerScores;
     private boolean wonLastGame;
 
+
     // listeners
     private OnBoardChangedListener boardListener;
     private OnPlayersConfigurationChangedListener playersListener;
@@ -265,15 +266,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     @Override
     public void enterPlayer(String name) {
 
+        // TODO: Wie kann man verhindern, dass dieser Button mehrfach gedrückt wird ?!?!?
 
         if (this.currentPlayer.equals("")) {
 
-            this.currentPlayer = name;
-
             this.tryEnterRoom(name);
-
-//            Player player = new Player(name);
-//            this.refPlayers.push().setValue(player);
         }
     }
 
@@ -403,12 +400,18 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             }
 
             // fire notification
+//            if (TicTacToeModelFirebase.this.playersListener != null) {
+//
+//                TicTacToeModelFirebase.this.playersListener.playersNamesChanged
+//                        (TicTacToeModelFirebase.this.playerNames[0],
+//                         TicTacToeModelFirebase.this.playerNames[1]);
+//            }
+
             if (TicTacToeModelFirebase.this.playersListener != null) {
 
-                TicTacToeModelFirebase.this.playersListener.playersNamesChanged
-                        (TicTacToeModelFirebase.this.playerNames[0],
-                         TicTacToeModelFirebase.this.playerNames[1]);
+                TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(true, false);
             }
+
         }
 
         @Override
@@ -440,7 +443,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                 TicTacToeModelFirebase.this.playersListener.playersNamesChanged
                         (TicTacToeModelFirebase.this.playerNames[0],
-                                TicTacToeModelFirebase.this.playerNames[1]);
+                         TicTacToeModelFirebase.this.playerNames[1]);
             }
         }
 
@@ -814,8 +817,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                 if (ticketNumber >= 2) {
 
-                    String info = "Sorry - There are still 2 players in the room!";
-                    Log.v(Globals.Tag, info);
                     return Transaction.abort();
 
                 } else {
@@ -837,10 +838,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     if (ticketNumber == 1 || ticketNumber == 2) {
 
                         // let player enter into room
-                        String info = "Player " + nickname + " NOW ENTERS THE ROOM :-)";
+                        String info = "Player " + nickname + " has entered!";
                         Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
                         Log.v(Globals.Tag, info);
 
+                        TicTacToeModelFirebase.this.currentPlayer = nickname;
                         TicTacToeModelFirebase.this.addPlayer(nickname);
                     } else {
 
@@ -850,7 +852,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     }
                 } else {
 
-                    String info = "Transaction has probably been aborted !!!!!!!!!!!!";
+                    String info = "Sorry - There are still 2 players in the room!";
                     Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
                     Log.v(Globals.Tag, info);
                 }

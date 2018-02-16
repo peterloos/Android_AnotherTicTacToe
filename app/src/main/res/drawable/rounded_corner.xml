@@ -3,10 +3,10 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
     <stroke
-        android:width="3dp"
+        android:width="2dp"
         android:color="@color/colorPrimaryDark" />
 
-    <solid android:color="@color/common_border_color" />
+    <solid android:color="@color/LightGrey" />
 
-    <corners android:radius="5dp" />
+    <corners android:radius="3dp" />
 </shape>

@@ -123,6 +123,9 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void playersNamesChanged(String firstPlayer, String secondPlayer) {
 
+        // TODO: Just for testing
+        // TODO: Sollte man am Ende entfernen ...
+
         String s1 = firstPlayer.equals("") ? "EMPTY" : firstPlayer;
         String s2 = secondPlayer.equals("") ? "EMPTY" : secondPlayer;
         String s = String.format("%s - %s", s1, s2);
@@ -130,23 +133,6 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
         this.textviewPlayer1.setText(firstPlayer);
         this.textviewPlayer2.setText(secondPlayer);
-
-        int numPlayers = 0;
-        if (!firstPlayer.equals(""))
-            numPlayers++;
-        if (!secondPlayer.equals(""))
-            numPlayers++;
-
-        if (numPlayers == 2) {
-            String msg = "1. Player: " + firstPlayer + "\n2. Player: " + secondPlayer + "\n\nGame begins";
-            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        } else if (numPlayers == 1) {
-            String msg = "Waiting for 2. Player ...";
-            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        } else if (numPlayers == 0) {
-            String msg = "Waiting to get paired ...";
-            Toast.makeText(this.getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
@@ -154,33 +140,54 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
         if (!firstPlayerIsActive && !secondPlayerIsActive) {
 
-            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
-            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
+//            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
+//            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
+
+            this.changeBackground (this.textviewPlayer1.getBackground(), R.color.LightGrey);
+            this.changeBackground (this.textviewPlayer2.getBackground(), R.color.LightGrey);
         } else if (firstPlayerIsActive && !secondPlayerIsActive) {
 
-            this.textviewPlayer1.setBackgroundColor(Color.RED);
-            this.textviewPlayer2.setBackgroundColor(Color.GREEN);
+//            this.textviewPlayer1.setBackgroundColor(Color.RED);
+//            this.textviewPlayer2.setBackgroundColor(Color.GREEN);
+
+            this.changeBackground (this.textviewPlayer1.getBackground(), R.color.OrangeRed);
+            this.changeBackground (this.textviewPlayer2.getBackground(), R.color.LightGreen);
+
         } else if (!firstPlayerIsActive && secondPlayerIsActive) {
 
-            this.textviewPlayer1.setBackgroundColor(Color.GREEN);
-            this.textviewPlayer2.setBackgroundColor(Color.RED);
-        }
+//            this.textviewPlayer1.setBackgroundColor(Color.GREEN);
+//            this.textviewPlayer2.setBackgroundColor(Color.RED);
 
-        // trying to change the background color
-        Drawable background = this.textviewPlayer1.getBackground();
-        if (background instanceof ShapeDrawable) {
-            // cast to 'ShapeDrawable'
-            ShapeDrawable shapeDrawable = (ShapeDrawable) background;
-            shapeDrawable.getPaint().setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
-        } else if (background instanceof GradientDrawable) {
-            // cast to 'GradientDrawable'
-            GradientDrawable gradientDrawable = (GradientDrawable) background;
-            gradientDrawable.setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
-        } else if (background instanceof ColorDrawable) {
+            this.changeBackground (this.textviewPlayer1.getBackground(), R.color.LightGreen);
+            this.changeBackground (this.textviewPlayer2.getBackground(), R.color.OrangeRed);
+        }
+    }
+
+    // private helper methods
+    private void changeBackground (Drawable background, int color) {
+
+        if (background instanceof ColorDrawable) {
             // alpha value may need to be set again after this call
-            ColorDrawable colorDrawable = (ColorDrawable) background;
-            colorDrawable.setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
+            GradientDrawable gradientDrawable = (GradientDrawable) background;
+            int singleColor = ContextCompat.getColor(this.getApplicationContext(), color);
+            gradientDrawable.setColor(singleColor);
         }
-
     }
 }
+
+
+//    // trying to change the background color
+//    Drawable background = this.textviewPlayer1.getBackground();
+//        if (background instanceof ShapeDrawable) {
+//                // cast to 'ShapeDrawable'
+//                ShapeDrawable shapeDrawable = (ShapeDrawable) background;
+//                shapeDrawable.getPaint().setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
+//                } else if (background instanceof GradientDrawable) {
+//                // cast to 'GradientDrawable'
+//                GradientDrawable gradientDrawable = (GradientDrawable) background;
+//                gradientDrawable.setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
+//                } else if (background instanceof ColorDrawable) {
+//                // alpha value may need to be set again after this call
+//                ColorDrawable colorDrawable = (ColorDrawable) background;
+//                colorDrawable.setColor(ContextCompat.getColor(this.getApplicationContext(),R.color.common_border_color));
+//                }

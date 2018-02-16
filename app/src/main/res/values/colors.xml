@@ -5,4 +5,8 @@
     <color name="colorAccent">#ff448aff</color>
 
     <color name="common_border_color">#ff448aff</color>
+
+    <color name="LightGrey">#D3D3D3</color>
+    <color name="LightGreen">#90EE90</color>
+    <color name="OrangeRed">#FF4500</color>
 </resources>
