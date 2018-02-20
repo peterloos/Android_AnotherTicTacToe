@@ -115,7 +115,6 @@ class Player {
 class State
 {
     private String status;
-    private int numberPlayers;   // TODO: Obsolet
     private int ticketNumber;
 
     // c'tors
@@ -140,16 +139,6 @@ class State
         this.ticketNumber = ticketNumber;
     }
 
-    public int getNumberPlayers() {
-
-        return numberPlayers;
-    }
-
-    public void setNumberPlayers(int numberPlayers) {
-
-        this.numberPlayers = numberPlayers;
-    }
-
     @Override
     public String toString() {
         return "Status: " + this.status + ", Ticket Number: " + this.ticketNumber;
@@ -157,6 +146,11 @@ class State
 }
 
 public class TicTacToeModelFirebase implements ITicTacToe {
+
+    private final String StateGameIdle = "gameIdle";
+    private final String StateGameActive = "gameActive";
+    private final String StateGameOver = "gameOver";
+    private final String StateGameRestarted = "gameRestarted";
 
     // Firebase utils
     private FirebaseDatabase database;
@@ -180,8 +174,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     private String currentPlayer;
     private int numPlayers;
     private int[] playerScores;
-    private boolean wonLastGame;
-
 
     // listeners
     private OnBoardChangedListener boardListener;
@@ -206,47 +198,19 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.playerTimestamps = new long[2];
         this.playerScores = new int[2];
         this.numPlayers = 0;
-        this.wonLastGame = false;
 
         // init access to database
         this.database = FirebaseDatabase.getInstance();
         this.refBoard = database.getReference("board");
         this.refPlayers = database.getReference("players");
         this.refState = this.database.getReference("state");
-
-        // setup listener object for 'value changed' events
-        this.valueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                TicTacToeModelFirebase.this.evaluateBoardSnapshot(dataSnapshot);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                // TODO: Error handling
-                Log.w(Globals.Tag, "Failed to read value.", error.toException());
-            }
-        };
-
-        this.refBoard.addValueEventListener(this.valueEventListener);
+        this.refBoard.addValueEventListener(this.boardValueEventListener);
         this.refPlayers.addChildEventListener(this.childEventListener);
+        this.refState.addValueEventListener(this.stateValueEventListener);
 
-        this.refState.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        this.initializeBoardInternal();
 
-                TicTacToeModelFirebase.this.evaluateStateSnapshot(dataSnapshot);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        this.clearBoard();
+        this.initializeBoardRemote();
     }
 
     // implementation of interface 'ITicTacToe'
@@ -274,7 +238,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
     }
 
-
     @Override
     public void leavePlayer() {
 
@@ -285,63 +248,25 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     }
 
     @Override
-    public void clearBoard() {
-
-        // need at first an cleared hash map
-        for (int row = 1; row <= Dimension; row++) {
-            for (int col = 1; col <= Dimension; col++) {
-                String key = this.cellToKey(row, col);
-                this.board.put(key, GameStone.Empty.toString());
-            }
-        }
+    public void clear() {
 
         // now initialize remote database
-        this.clearAllStonesRemote();
+        this.initializeBoardRemote();
 
-        // notify view(s)
-        if (this.boardListener != null) {
-            this.boardListener.clearBoard();
-        }
+//        // notify view(s)
+//        if (this.boardListener != null) {
+//            this.boardListener.clearBoard();
+//        }
+//        if (this.playersListener != null) {
+//            this.playersListener.playersActivityStateChanged(false, false);
+//        }
     }
 
+
+    // TODO : ACHTUNG :  DIESE SEQAUENZ HABEN WIR ZWEI MAL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     @Override
-//    public void restartGame() {
-//
-//        // compute who begins to play
-//        if (this.wonLastGame) {
-//
-//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsOther;
-//            TicTacToeModelFirebase.this.stone = GameStone.O;
-//        } else {
-//
-//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsMe;
-//            TicTacToeModelFirebase.this.stone = GameStone.X;
-//        }
-//
-//        String info = "";
-//        if (this.gameState == GameState.ActiveIsMe) {
-//            info = "Player " + this.playerNames[1] + " begins !!!";
-//        } else if (this.gameState == GameState.ActiveIsOther) {
-//            info = "Player " + this.playerNames[0] + " begins !!!";
-//        }
-//        Toast.makeText(this.context, info, Toast.LENGTH_SHORT).show();
-//
-//        // fire notification according to players state
-//        if (this.playersListener != null) {
-//
-//            if (this.wonLastGame) {
-//
-//                this.playersListener.playersActivityStateChanged(false, true);
-//            }
-//            else {
-//
-//                this.playersListener.playersActivityStateChanged(true, false);
-//            }
-//        }
-//    }
-
-
-    public void restartGame() {
+    public void restart() {
 
         if (TicTacToeModelFirebase.this.playerTimestamps[0] < TicTacToeModelFirebase.this.playerTimestamps[1]) {
 
@@ -362,14 +287,16 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
     }
 
-    private ChildEventListener childEventListener = new ChildEventListener()
-    {
+    private ChildEventListener childEventListener = new ChildEventListener() {
+
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
             // a new player has been added
             Player player = dataSnapshot.getValue(Player.class);
             String name = player.getName();
+
+            TicTacToeModelFirebase.this.numPlayers ++;
 
             Log.d(Globals.Tag, "onChildAdded: " + player.toString() + " [" + dataSnapshot.getKey() + "]");
 
@@ -385,33 +312,21 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                 TicTacToeModelFirebase.this.playerTimestamps[1] = player.getCreationDateLong();
             }
 
-            // compute who begins to play
-            if (TicTacToeModelFirebase.this.numPlayers == 2) {
+            if (TicTacToeModelFirebase.this.numPlayers == 1) {
 
-                if (TicTacToeModelFirebase.this.playerTimestamps[0] < TicTacToeModelFirebase.this.playerTimestamps[1]) {
+                if (TicTacToeModelFirebase.this.playersListener != null) {
 
-                    TicTacToeModelFirebase.this.gameState = GameState.ActiveIsMe;
-                    TicTacToeModelFirebase.this.stone = GameStone.X;
-                } else {
-
-                    TicTacToeModelFirebase.this.gameState = GameState.ActiveIsOther;
-                    TicTacToeModelFirebase.this.stone = GameStone.O;
+                    // fire name
+                    TicTacToeModelFirebase.this.playersListener.playersNamesChanged
+                            (TicTacToeModelFirebase.this.playerNames[0],
+                                    TicTacToeModelFirebase.this.playerNames[1]);
                 }
             }
+            else if (TicTacToeModelFirebase.this.numPlayers == 2) {
 
-            // fire notification
-//            if (TicTacToeModelFirebase.this.playersListener != null) {
-//
-//                TicTacToeModelFirebase.this.playersListener.playersNamesChanged
-//                        (TicTacToeModelFirebase.this.playerNames[0],
-//                         TicTacToeModelFirebase.this.playerNames[1]);
-//            }
-
-            if (TicTacToeModelFirebase.this.playersListener != null) {
-
-                TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(true, false);
+                // kick start of game
+                TicTacToeModelFirebase.this.updateState(StateGameActive);
             }
-
         }
 
         @Override
@@ -460,6 +375,82 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
     };
 
+    private ValueEventListener boardValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+            TicTacToeModelFirebase.this.evaluateBoardSnapshot(dataSnapshot);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError error) {
+            Log.e(Globals.Tag, "Failed to read value.", error.toException());
+        }
+    };
+
+    private ValueEventListener stateValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+            TicTacToeModelFirebase.this.evaluateStateSnapshot(dataSnapshot);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError error) {
+            Log.e(Globals.Tag, "Failed to read value.", error.toException());
+        }
+    };
+
+    // private helper methods
+    private void evaluateStateSnapshot(DataSnapshot dataSnapshot) {
+
+        if (! dataSnapshot.exists()) {
+            return;
+        }
+
+        State state = dataSnapshot.getValue(State.class);
+        String msg = String.format("evaluateStateSnapshot  ==> State: %s", state.toString());
+        Log.v(Globals.Tag, msg);
+
+        if (state.getStatus().equals(StateGameActive) || state.getStatus().equals(StateGameRestarted)) {
+
+            // decide, which player begins
+            if (this.playerTimestamps[0] < this.playerTimestamps[1]) {
+
+                this.gameState = GameState.ActiveIsMe;
+                this.stone = GameStone.X;
+            } else {
+
+                this.gameState = GameState.ActiveIsOther;
+                this.stone = GameStone.O;
+            }
+
+            // fire notification
+            if (this.playersListener != null) {
+
+                // fire names
+                this.playersListener.playersNamesChanged (this.playerNames[0], this.playerNames[1]);
+
+                if (this.gameState == GameState.ActiveIsMe) {
+
+                    this.playersListener.playersActivityStateChanged(true, false);
+                }
+                else if (this.gameState == GameState.ActiveIsOther) {
+
+                    this.playersListener.playersActivityStateChanged(false, true);
+                }
+            }
+        }
+        else if (state.getStatus().equals(StateGameOver)) {
+
+            // clear players background colors
+            if (this.playersListener != null) {
+
+                this.playersListener.playersActivityStateChanged(false, false);
+            }
+        }
+    }
+
     @Override
     public GameStone getStoneAt(int row, int col) {
 
@@ -494,18 +485,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.setSingleStoneRemote(row, col, stone);
 
         return true;
-    }
-
-    // private helper methods
-    private void evaluateStateSnapshot(DataSnapshot dataSnapshot) {
-
-        if (! dataSnapshot.exists()) {
-            return;
-        }
-
-        State state = dataSnapshot.getValue(State.class);
-        String msg = String.format("evaluateStateSnapshot  ==> State: %s", state.toString());
-        Log.v(Globals.Tag, msg);
     }
 
     private void evaluateBoardSnapshot(DataSnapshot dataSnapshot) {
@@ -561,44 +540,47 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                         GameStone.valueOf(stone));
             }
 
-            // check for end of game
-            if (this.checkForEndOfGame(newStone)) {
+            if (this.gameState == GameState.ActiveIsMe || this.gameState == GameState.ActiveIsOther) {
 
-                String result = "";
-                if (this.gameState == GameState.ActiveIsMe) {
+                // check for end of game
+                if (this.checkForEndOfGame(newStone)) {
 
-                    result = "Congratulations - " + this.playerNames[0] + "\n"+ "You've won !!!";
+                    String result = "";
+                    if (this.gameState == GameState.ActiveIsMe) {
 
-                    this.wonLastGame = true;
+                        result = "Congratulations - " + this.playerNames[0] + "\n"+ "You've won !!!";
 
-                } else if (this.gameState == GameState.ActiveIsOther) {
+                    } else if (this.gameState == GameState.ActiveIsOther) {
 
-                    result = "Sorry - " + this.playerNames[0] + "\n"+ "You just lost the game !!!";
+                        result = "Sorry - " + this.playerNames[0] + "\n"+ "You just lost the game !!!";
+                    }
+                    Toast.makeText(this.context, result, Toast.LENGTH_SHORT).show();
 
-                    this.wonLastGame = false;
+                    this.gameState = GameState.Inactive;
+
+                    this.initializeBoardInternal();
+
+                    this.updateState(StateGameOver);
                 }
-                Toast.makeText(this.context, result, Toast.LENGTH_SHORT).show();
+                else {
 
-                this.gameState = GameState.Inactive;
+                    // switch players state
+                    if (this.gameState == GameState.ActiveIsMe) {
 
-                return;
-            }
+                        this.gameState = GameState.ActiveIsOther;
+                    } else if (this.gameState == GameState.ActiveIsOther) {
 
-            // switch players state
-            if (this.gameState == GameState.ActiveIsMe) {
+                        this.gameState = GameState.ActiveIsMe;
+                    }
 
-                this.gameState = GameState.ActiveIsOther;
-            } else if (this.gameState == GameState.ActiveIsOther) {
+                    // fire notification according to players state
+                    if (this.playersListener != null) {
 
-                this.gameState = GameState.ActiveIsMe;
-            }
-
-            // fire notification according to players state
-            if (this.playersListener != null) {
-
-                this.playersListener.playersActivityStateChanged(
-                        (this.gameState == GameState.ActiveIsMe) ? true : false,
-                        (this.gameState == GameState.ActiveIsMe) ? false : true);
+                        this.playersListener.playersActivityStateChanged(
+                                (this.gameState == GameState.ActiveIsMe) ? true : false,
+                                (this.gameState == GameState.ActiveIsMe) ? false : true);
+                    }
+                }
             }
         }
     }
@@ -640,7 +622,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.refBoard.child(row).child(col).setValue(cell);
     }
 
-    private void clearAllStonesRemote() {
+    private void initializeBoardRemote() {
 
         Map<String, Object> board = new HashMap<>();
 
@@ -742,61 +724,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         return false;
     }
 
-//    public void test01() {
-//
-//        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference("state").child("num_players");
-//
-//        ref.runTransaction(new Transaction.Handler() {
-//
-//            @Override
-//            public Transaction.Result doTransaction(MutableData mutableData) {
-//
-//                Log.v(Globals.Tag, ">>> doTransaction");
-//
-//                Object o = mutableData.getValue(State.class);
-//                if (o == null) {
-//                    Log.v(Globals.Tag, "!!! doTransaction - mutableData == null ?!?!?!?");
-//                    return Transaction.success(mutableData);
-//                }
-//
-//                State state = mutableData.getValue(State.class);
-//
-//                String msg = String.format("doTransaction --> currentValue ==> %d", state.getNumberPlayers());
-//                Log.v(Globals.Tag, msg);
-//
-//                state.setNumberPlayers(state.getNumberPlayers() + 1);
-//                mutableData.setValue(state);
-//                Log.v(Globals.Tag, "doTransaction now worked !!!");
-//
-////                Player player = new Player("Name_" + Integer.toString(currentValue));
-////                TicTacToeModelFirebase.this.refPlayers.push().setValue(player);
-//
-//                Log.v(Globals.Tag, "<<< doTransaction");
-//                return Transaction.success(mutableData);
-//            }
-//
-//            @Override
-//            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-//
-////                // Transaction completed
-////                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
-////
-////                int finalValue = dataSnapshot.getValue(int.class);
-////
-////                String msg = String.format("onComplete  --> finalValue ==> %d", finalValue);
-////                Log.v(Globals.Tag, msg);
-//
-//                // Transaction completed
-//                Log.v(Globals.Tag, "onComplete ..." + Boolean.toString(b));
-//
-//                State state = dataSnapshot.getValue(State.class);
-//
-//                String msg = String.format("onComplete  --> finalValue ==> %d", state.getNumberPlayers());
-//                Log.v(Globals.Tag, msg);
-//            }
-//        });
-//    }
-
     public void tryEnterRoom (final String nickname) {
 
         DatabaseReference ref = this.refState;
@@ -867,5 +794,21 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         player.setName(name);
         player.setKey(playersRef.getKey());
         playersRef.setValue(player);
+    }
+
+    private void updateState(String state) {
+
+        this.refState.child("status").setValue(state);
+    }
+
+    private void initializeBoardInternal() {
+
+        // initialize internal hash map of stones
+        for (int row = 1; row <= Dimension; row++) {
+            for (int col = 1; col <= Dimension; col++) {
+                String key = this.cellToKey(row, col);
+                this.board.put(key, GameStone.Empty.toString());
+            }
+        }
     }
 }

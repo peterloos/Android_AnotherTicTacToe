@@ -92,26 +92,18 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner"
             android:textAlignment="textStart"
             android:layout_gravity="start"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/textviewEmptySpace"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/textviewPlayer2"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner"
             android:textAlignment="textEnd"
             android:layout_gravity="end"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
 
     </LinearLayout>
 
@@ -183,13 +175,6 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Another Game" />
-
-        <Button
-            android:id="@+id/buttonXXXXXXX"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="TEST" />
 
     </LinearLayout>
 

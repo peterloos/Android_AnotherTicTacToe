@@ -6,9 +6,11 @@ package peterloos.de.anothertictactoe.models;
 
 public enum GameState {
 
+    // TODO: Das muss InteralGameState heißen ..................
+
     // TODO: Active wird derzeit nur im OFFLINE verwendet -
     // TODO: Vielleicht kann man das auch ändern ?!?!?!
-    Active, Inactive, ActiveIsMe, ActiveIsOther
+    /*   Active, */ Inactive, ActiveIsMe, ActiveIsOther
 }
 
 // TODO 2:  Noch 2 STates einführen: ActiveIsMeAndClickedOnStone

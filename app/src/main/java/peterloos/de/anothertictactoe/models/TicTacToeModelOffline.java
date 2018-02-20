@@ -34,7 +34,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
 
         this.context = context;
         this.board = new GameStone[Dimension][Dimension];
-        this.clearBoard();
+        this.clear();
     }
 
     // implementation of interface 'ITicTacToe'
@@ -64,7 +64,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
-    public void clearBoard() {
+    public void clear() {
 
         for (int i = 0; i < Dimension; i++) {
             for (int j = 0; j < Dimension; j++) {
@@ -73,7 +73,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
         }
 
         this.firstPlayer = true;
-        this.gameState = GameState.Active;
+        this.gameState = GameState.Inactive;
 
         if (this.boardListener != null) {
             this.boardListener.clearBoard();
@@ -81,7 +81,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
-    public void restartGame() {
+    public void restart() {
 
         // TODO:
         // probably to be done
