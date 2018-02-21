@@ -232,10 +232,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
         // TODO: Wie kann man verhindern, dass dieser Button mehrfach gedrückt wird ?!?!?
 
-        if (this.currentPlayer.equals("")) {
-
-            this.tryEnterRoom(name);
-        }
+        addPlayer (name);
+//        if (this.currentPlayer.equals("")) {
+//
+//            this.tryEnterRoom(name);
+//        }
     }
 
     @Override
