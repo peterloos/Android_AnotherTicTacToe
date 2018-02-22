@@ -8,4 +8,7 @@ public interface OnPlayersConfigurationChangedListener {
 
     void playersNamesChanged(String firstPlayer, String secondPlayer);
     void playersActivityStateChanged(boolean firstPlayerIsActive, boolean secondPlayerIsActive);
+
+    void currentPlayersNameChanged (String name);
+    void anotherPlayersNameChanged (String name);
 }

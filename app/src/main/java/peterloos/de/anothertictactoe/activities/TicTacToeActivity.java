@@ -104,34 +104,45 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void playersNamesChanged(String firstPlayer, String secondPlayer) {
 
-        this.textviewPlayer1.setText(firstPlayer);
-        this.textviewPlayer2.setText(secondPlayer);
+//        this.textviewPlayer1.setText(firstPlayer);
+//        this.textviewPlayer2.setText(secondPlayer);
     }
 
     @Override
     public void playersActivityStateChanged(boolean firstPlayerIsActive, boolean secondPlayerIsActive) {
 
         // TODO: DAS müssen Instanzvariablen werden ... einmal berechnen !!!
-        Resources res = this.getResources();
-        int red = res.getColor(R.color.OrangeRed);
-        int green = res.getColor(R.color.LightGreen);
+//        Resources res = this.getResources();
+//        int red = res.getColor(R.color.OrangeRed);
+//        int green = res.getColor(R.color.LightGreen);
+//
+//        if (!firstPlayerIsActive && !secondPlayerIsActive) {
+//
+//            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
+//            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
+//
+//        } else if (firstPlayerIsActive && !secondPlayerIsActive) {
+//
+//            this.textviewPlayer1.setBackgroundColor(green);
+//            this.textviewPlayer2.setBackgroundColor(red);
+//
+//
+//        } else if (!firstPlayerIsActive && secondPlayerIsActive) {
+//
+//            this.textviewPlayer1.setBackgroundColor(red);
+//            this.textviewPlayer2.setBackgroundColor(green);
+//        }
+    }
 
-        if (!firstPlayerIsActive && !secondPlayerIsActive) {
+    @Override
+    public void currentPlayersNameChanged (String name) {
 
-            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
-            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
+        this.textviewPlayer1.setText(name);
+    }
 
-        } else if (firstPlayerIsActive && !secondPlayerIsActive) {
+    @Override
+    public void anotherPlayersNameChanged (String name) {
 
-            this.textviewPlayer1.setBackgroundColor(green);
-            this.textviewPlayer2.setBackgroundColor(red);
-
-
-        } else if (!firstPlayerIsActive && secondPlayerIsActive) {
-
-            this.textviewPlayer1.setBackgroundColor(red);
-            this.textviewPlayer2.setBackgroundColor(green);
-        }
+        this.textviewPlayer2.setText(name);
     }
 }
-

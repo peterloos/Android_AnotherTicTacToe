@@ -20,4 +20,3 @@ public interface ITicTacToe {
     void clear();
     void restart();
 }
-
