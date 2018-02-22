@@ -188,6 +188,10 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     private final String GameOver1stPlayerWon = "GameOver1stPlayerWon";
     private final String GameOver2ndPlayerWon = "GameOver2ndPlayerWon";
 
+    // game commands
+    private final String GameCommandClear = "clear";
+    private final String GameCommandStart = "start";
+
     private final String StateGameIdle = "gameIdle";
     private final String StateGameActive = "gameActive";
     private final String StateGameOver = "gameOver";
@@ -197,6 +201,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     private FirebaseDatabase database;
     private DatabaseReference refBoard;
     private DatabaseReference refPlayers;
+    private DatabaseReference refCommand;
     private DatabaseReference refStatus;
     private DatabaseReference refTicket;
 
@@ -209,7 +214,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     private GameStone stone;
 
     // players utils
-    // TODO: Das sollte ein array von Objekten sein !!!!!!!!!!!!!!!1
+    // TODO: Das sollte ein array von Objekten sein !!!!!!!!!!!!!!!
     private String[] playerNames;
     private String[] playerKeys;
     private long[] playerTimestamps;
@@ -244,6 +249,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         this.database = FirebaseDatabase.getInstance();
         this.refBoard = database.getReference("board");
         this.refPlayers = database.getReference("players");
+        this.refCommand = this.database.getReference("control/command");
         this.refStatus = this.database.getReference("control/status");
         this.refTicket = this.database.getReference("control/ticket");
 
@@ -289,6 +295,13 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
             this.refPlayers.child(this.playerKeys[0]).removeValue();
         }
+    }
+
+    @Override
+    public void start() {
+
+        // trigger start command in cloud
+        this.setCommand(GameCommandStart);
     }
 
     @Override
@@ -500,8 +513,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                         Log.v(Globals.Tag, s);
 
                         TicTacToeModelFirebase.this.playersListener.currentPlayersNameChanged(status.getParameter2());
-                    }
-                    else {
+                    } else {
 
                         String s = String.format("==> Status: %s -- currentPlayer: %s -- calling ANOTHER !!!", status.getId(), status.getParameter2());
                         Log.v(Globals.Tag, s);
@@ -510,6 +522,9 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                         TicTacToeModelFirebase.this.playersListener.anotherPlayersNameChanged(status.getParameter2());
                     }
                 }
+                break;
+
+            case GameActivePlayer:
                 break;
 
             default:
@@ -910,6 +925,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         player.setName(name);
         player.setKey(playersRef.getKey());
         playersRef.setValue(player);
+    }
+
+    private void setCommand(String cmd) {
+
+        this.refCommand.setValue(cmd);
     }
 
 //    private void updateState(String state) {

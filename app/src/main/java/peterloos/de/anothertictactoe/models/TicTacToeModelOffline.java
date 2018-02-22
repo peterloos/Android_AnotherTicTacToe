@@ -64,6 +64,12 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
+    public void start () {
+
+        // TODO: TBD
+    }
+
+    @Override
     public void clear() {
 
         for (int i = 0; i < Dimension; i++) {

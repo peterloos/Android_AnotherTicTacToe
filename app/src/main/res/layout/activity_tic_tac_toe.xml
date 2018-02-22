@@ -163,6 +163,13 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/buttonStart"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Start" />
+
+        <Button
             android:id="@+id/buttonClear"
             android:layout_width="0dp"
             android:layout_weight="1"

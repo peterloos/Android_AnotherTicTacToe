@@ -23,6 +23,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     // UI controls
     private Button buttonEnter;
     private Button buttonLeave;
+    private Button buttonStart;
     private Button buttonClear;
     private Button buttonRestart;
 
@@ -55,11 +56,13 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.edittextNickname = this.findViewById(R.id.edittextNickname);
         this.textviewPlayer1 = this.findViewById(R.id.textviewPlayer1);
         this.textviewPlayer2 = this.findViewById(R.id.textviewPlayer2);
+        this.buttonStart = this.findViewById(R.id.buttonStart);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
         this.buttonClear = this.findViewById(R.id.buttonClear);
 
         this.buttonEnter.setOnClickListener(this);
         this.buttonLeave.setOnClickListener(this);
+        this.buttonStart.setOnClickListener(this);
         this.buttonClear.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
 
@@ -90,6 +93,11 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         } else if (view == this.buttonLeave) {
 
             this.model.leavePlayer();
+        } else if (view == this.buttonStart) {
+
+            Log.v(Globals.Tag, "Staaaaaaaaaaaaaaaaaaaaart");
+            this.model.start();
+
         } else if (view == this.buttonClear) {
 
             this.model.clear();
@@ -135,14 +143,26 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
-    public void currentPlayersNameChanged (String name) {
+    public void currentPlayersNameChanged(String name) {
+
+        // TODO: DAS müssen Instanzvariablen werden ... einmal berechnen !!!
+        Resources res = this.getResources();
+        int red = res.getColor(R.color.OrangeRed);
+        int green = res.getColor(R.color.LightGreen);
 
         this.textviewPlayer1.setText(name);
+        this.textviewPlayer1.setBackgroundColor(red);
     }
 
     @Override
-    public void anotherPlayersNameChanged (String name) {
+    public void anotherPlayersNameChanged(String name) {
+
+        // TODO: DAS müssen Instanzvariablen werden ... einmal berechnen !!!
+        Resources res = this.getResources();
+        int red = res.getColor(R.color.OrangeRed);
+        int green = res.getColor(R.color.LightGreen);
 
         this.textviewPlayer2.setText(name);
+        this.textviewPlayer1.setBackgroundColor(green);
     }
 }
