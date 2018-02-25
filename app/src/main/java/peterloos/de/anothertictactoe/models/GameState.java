@@ -10,7 +10,9 @@ public enum GameState {
 
     // TODO: Active wird derzeit nur im OFFLINE verwendet -
     // TODO: Vielleicht kann man das auch ändern ?!?!?!
-    /*   Active, */ Inactive, ActiveIsMe, ActiveIsOther
+    /*   Active, */ // Inactive, ActiveIsMe, ActiveIsOther
+
+    Idle, Active, Inactive
 }
 
 // TODO 2:  Noch 2 STates einführen: ActiveIsMeAndClickedOnStone

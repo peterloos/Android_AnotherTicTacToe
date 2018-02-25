@@ -93,9 +93,9 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         } else if (view == this.buttonLeave) {
 
             this.model.leavePlayer();
+
         } else if (view == this.buttonStart) {
 
-            Log.v(Globals.Tag, "Staaaaaaaaaaaaaaaaaaaaart");
             this.model.start();
 
         } else if (view == this.buttonClear) {
