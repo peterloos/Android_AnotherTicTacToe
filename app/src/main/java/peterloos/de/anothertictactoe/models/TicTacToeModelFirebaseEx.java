@@ -163,7 +163,7 @@
 //
 //    // game utils
 //    private HashMap<String, String> board;
-//    private GameState gameState;
+//    private InternalGameState gameState;
 //    private GameStone stone;
 //
 //    // players utils
@@ -186,7 +186,7 @@
 //
 //        this.context = context;
 //
-//        this.gameState = GameState.Inactive;
+//        this.gameState = InternalGameState.Inactive;
 //        this.board = new HashMap<>();
 //
 //        // TODO: Warum steht das nicht in initGame
@@ -271,11 +271,11 @@
 //
 //        if (TicTacToeModelFirebase.this.playerTimestamps[0] < TicTacToeModelFirebase.this.playerTimestamps[1]) {
 //
-//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsMe;
+//            TicTacToeModelFirebase.this.gameState = InternalGameState.ActiveIsMe;
 //            TicTacToeModelFirebase.this.stone = GameStone.X;
 //        } else {
 //
-//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsOther;
+//            TicTacToeModelFirebase.this.gameState = InternalGameState.ActiveIsOther;
 //            TicTacToeModelFirebase.this.stone = GameStone.O;
 //        }
 //
@@ -418,11 +418,11 @@
 //            // decide, which player begins
 //            if (this.playerTimestamps[0] < this.playerTimestamps[1]) {
 //
-//                this.gameState = GameState.ActiveIsMe;
+//                this.gameState = InternalGameState.ActiveIsMe;
 //                this.stone = GameStone.X;
 //            } else {
 //
-//                this.gameState = GameState.ActiveIsOther;
+//                this.gameState = InternalGameState.ActiveIsOther;
 //                this.stone = GameStone.O;
 //            }
 //
@@ -432,11 +432,11 @@
 //                // fire names
 //                this.playersListener.playersNamesChanged (this.playerNames[0], this.playerNames[1]);
 //
-//                if (this.gameState == GameState.ActiveIsMe) {
+//                if (this.gameState == InternalGameState.ActiveIsMe) {
 //
 //                    this.playersListener.playersActivityStateChanged(true, false);
 //                }
-//                else if (this.gameState == GameState.ActiveIsOther) {
+//                else if (this.gameState == InternalGameState.ActiveIsOther) {
 //
 //                    this.playersListener.playersActivityStateChanged(false, true);
 //                }
@@ -466,11 +466,11 @@
 //        String key = this.cellToKey(row, col);
 //
 //        // ignore this request - current game over or not initialized
-//        if (this.gameState == GameState.Inactive)
+//        if (this.gameState == InternalGameState.Inactive)
 //            return false;
 //
 //        // it's not your turn
-//        if (this.gameState == GameState.ActiveIsOther) {
+//        if (this.gameState == InternalGameState.ActiveIsOther) {
 //
 //            String msg = String.format("It's %s's turn!", this.playerNames[1]);
 //            Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show();
@@ -541,23 +541,23 @@
 //                        GameStone.valueOf(stone));
 //            }
 //
-//            if (this.gameState == GameState.ActiveIsMe || this.gameState == GameState.ActiveIsOther) {
+//            if (this.gameState == InternalGameState.ActiveIsMe || this.gameState == InternalGameState.ActiveIsOther) {
 //
 //                // check for end of game
 //                if (this.checkForEndOfGame(newStone)) {
 //
 //                    String result = "";
-//                    if (this.gameState == GameState.ActiveIsMe) {
+//                    if (this.gameState == InternalGameState.ActiveIsMe) {
 //
 //                        result = "Congratulations - " + this.playerNames[0] + "\n"+ "You've won !!!";
 //
-//                    } else if (this.gameState == GameState.ActiveIsOther) {
+//                    } else if (this.gameState == InternalGameState.ActiveIsOther) {
 //
 //                        result = "Sorry - " + this.playerNames[0] + "\n"+ "You just lost the game !!!";
 //                    }
 //                    Toast.makeText(this.context, result, Toast.LENGTH_SHORT).show();
 //
-//                    this.gameState = GameState.Inactive;
+//                    this.gameState = InternalGameState.Inactive;
 //
 //                    this.initializeBoardInternal();
 //
@@ -566,20 +566,20 @@
 //                else {
 //
 //                    // switch players state
-//                    if (this.gameState == GameState.ActiveIsMe) {
+//                    if (this.gameState == InternalGameState.ActiveIsMe) {
 //
-//                        this.gameState = GameState.ActiveIsOther;
-//                    } else if (this.gameState == GameState.ActiveIsOther) {
+//                        this.gameState = InternalGameState.ActiveIsOther;
+//                    } else if (this.gameState == InternalGameState.ActiveIsOther) {
 //
-//                        this.gameState = GameState.ActiveIsMe;
+//                        this.gameState = InternalGameState.ActiveIsMe;
 //                    }
 //
 //                    // fire notification according to players state
 //                    if (this.playersListener != null) {
 //
 //                        this.playersListener.playersActivityStateChanged(
-//                                (this.gameState == GameState.ActiveIsMe) ? true : false,
-//                                (this.gameState == GameState.ActiveIsMe) ? false : true);
+//                                (this.gameState == InternalGameState.ActiveIsMe) ? true : false,
+//                                (this.gameState == InternalGameState.ActiveIsMe) ? false : true);
 //                    }
 //                }
 //            }
@@ -712,7 +712,7 @@
 //
 //        if (emptyStones == 0) {
 //
-//            this.gameState = GameState.Inactive;
+//            this.gameState = InternalGameState.Inactive;
 //            Toast.makeText(this.context, "Game over - It's a draw!", Toast.LENGTH_SHORT).show();
 //
 //            // fire notification according to players state

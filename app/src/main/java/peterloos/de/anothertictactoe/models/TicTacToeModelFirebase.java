@@ -191,8 +191,8 @@ class Status {
 
 public class TicTacToeModelFirebase implements ITicTacToe {
 
+    // cloud states
     private final String GameIdle = "GameIdle";
-
     private final String GameRoom1Player = "GameRoom1Player";
     private final String GameRoom2Players = "GameRoom2Players";
     private final String GameActivePlayer = "GameActivePlayer";
@@ -201,11 +201,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     // game commands
     private final String GameCommandClear = "clear";
     private final String GameCommandStart = "start";
-
-    private final String StateGameIdle = "gameIdle";
-    private final String StateGameActive = "gameActive";
-    private final String StateGameOver = "gameOver";
-    private final String StateGameRestarted = "gameRestarted";
 
     // Firebase utils
     private FirebaseDatabase database;
@@ -220,7 +215,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
     // game utils
     private HashMap<String, String> board;
-    private GameState gameState;
+    private InternalGameState internalGameState;
     private GameStone stone;
 
     // players utils
@@ -228,21 +223,18 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     private String[] playerKeys;
     private String currentPlayer;
     private String otherPlayer;
-
     private String currentPlayerKey;
-    // private int[] playerScores;
 
     // listeners
     private OnBoardChangedListener boardListener;
     private OnPlayersConfigurationChangedListener playersListener;
-    private ValueEventListener valueEventListener;
 
     // c'tor
     public TicTacToeModelFirebase(Context context) {
 
         this.context = context;
 
-        this.gameState = GameState.Inactive;
+        this.internalGameState = InternalGameState.Inactive;
         this.board = new HashMap<>();
 
         // TODO: Warum steht das nicht in initGame
@@ -346,11 +338,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
 //        if (TicTacToeModelFirebase.this.playerTimestamps[0] < TicTacToeModelFirebase.this.playerTimestamps[1]) {
 //
-//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsMe;
+//            TicTacToeModelFirebase.this.internalGameState = InternalGameState.ActiveIsMe;
 //            TicTacToeModelFirebase.this.stone = GameStone.X;
 //        } else {
 //
-//            TicTacToeModelFirebase.this.gameState = GameState.ActiveIsOther;
+//            TicTacToeModelFirebase.this.internalGameState = InternalGameState.ActiveIsOther;
 //            TicTacToeModelFirebase.this.stone = GameStone.O;
 //        }
 //
@@ -381,9 +373,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
 
-            Toast.makeText(TicTacToeModelFirebase.this.context, "Yeahhhhhhhhhhhhhhhh", Toast.LENGTH_SHORT).show();
             TicTacToeModelFirebase.this.evaluateStatusSnapshot(dataSnapshot);
-
         }
 
         @Override
@@ -391,15 +381,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             Log.e(Globals.Tag, "Failed to read value.", error.toException());
         }
     };
-
-//    private final String GameIdle = "GameIdle";
-//    private final String GameRoom1Player = "GameRoom1Player";
-//    private final String GameRoom2Players = "GameRoom2Players";
-//    private final String GameActivePlayer = "GameActivePlayer";
-//    private final String GameActive1stPlayer = "GameActive1stPlayer";
-//    private final String GameActive2ndPlayer = "GameActive2ndPlayer";
-//    private final String GameOver1stPlayerWon = "GameOver1stPlayerWon";
-//    private final String GameOver2ndPlayerWon = "GameOver2ndPlayerWon";
 
     // private helper methods
     private void evaluateStatusSnapshot(DataSnapshot dataSnapshot) {
@@ -409,7 +390,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
 
         Status status = dataSnapshot.getValue(Status.class);
-        String msg = String.format("evaluateStateSnapshot  ==> State: %s", status.toString());
+        String msg = String.format("evaluateStatusSnapshot  ==> Status: %s", status.toString());
         Log.v(Globals.Tag, msg);
 
         switch (status.getId()) {
@@ -458,14 +439,14 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     String s = String.format(" ACTIVE -- I'm the player with the ID %s .. and should PLAY NOW ...", status.getParameter1());
                     Log.v(Globals.Tag, s);
 
-                    this.gameState = GameState.Active;
+                    this.internalGameState = InternalGameState.Active;
                 }
                 else {
 
                     String s = String.format(" PASSIVE -- I'm the player with the ID %s .. and should WAIT NOW ...", status.getParameter1());
                     Log.v(Globals.Tag, s);
 
-                    this.gameState = GameState.Inactive;
+                    this.internalGameState = InternalGameState.Inactive;
                 }
 
                 // TODO: DAS SCHEINT NICHT ZU STIMMEN .. SOLLTE NUR EINMAL !!!!!!!! in der APp stehen !!!
@@ -518,11 +499,12 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         String key = this.cellToKey(row, col);
 
         // ignore this request - current game over or not initialized
-        if (this.gameState == GameState.Idle)
+        // xx xx xx
+        if (this.internalGameState == InternalGameState.Initialization)
             return false;
 
         // it's not your turn
-        if (this.gameState == GameState.Inactive) {
+        if (this.internalGameState == InternalGameState.Inactive) {
 
             String msg = String.format("It's %s's turn!", this.otherPlayer);
             Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show();
