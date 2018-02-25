@@ -215,7 +215,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
     // game utils
     private HashMap<String, String> board;
-    private InternalGameState internalGameState;
+    private AppState appState;
     private GameStone stone;
 
     // players utils
@@ -234,7 +234,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
         this.context = context;
 
-        this.internalGameState = InternalGameState.Inactive;
+        this.appState = AppState.Init;
         this.board = new HashMap<>();
 
         // TODO: Warum steht das nicht in initGame
@@ -338,11 +338,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
 //        if (TicTacToeModelFirebase.this.playerTimestamps[0] < TicTacToeModelFirebase.this.playerTimestamps[1]) {
 //
-//            TicTacToeModelFirebase.this.internalGameState = InternalGameState.ActiveIsMe;
+//            TicTacToeModelFirebase.this.appState = AppState.ActiveIsMe;
 //            TicTacToeModelFirebase.this.stone = GameStone.X;
 //        } else {
 //
-//            TicTacToeModelFirebase.this.internalGameState = InternalGameState.ActiveIsOther;
+//            TicTacToeModelFirebase.this.appState = AppState.ActiveIsOther;
 //            TicTacToeModelFirebase.this.stone = GameStone.O;
 //        }
 //
@@ -406,20 +406,20 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                 if (TicTacToeModelFirebase.this.playersListener != null) {
 
                     if (this.currentPlayer.equals(status.getParameter2())) {
-                        // the current user of the app has entered the room
 
+                        // the current user of the app has entered the room
                         String s = String.format("==> Status: %s -- currentPlayer: %s -- calling CURRENT !!!", status.getId(), status.getParameter2());
                         Log.v(Globals.Tag, s);
 
                         TicTacToeModelFirebase.this.playersListener.currentPlayersNameChanged(status.getParameter2());
                     } else {
 
-                        String s = String.format("==> Status: %s -- currentPlayer: %s -- calling ANOTHER !!!", status.getId(), status.getParameter2());
+                        String s = String.format("==> Status: %s -- currentPlayer: %s -- calling OTHER !!!", status.getId(), status.getParameter2());
                         Log.v(Globals.Tag, s);
 
                         // a second player must have entered the room
                         this.otherPlayer = status.getParameter2();
-                        TicTacToeModelFirebase.this.playersListener.anotherPlayersNameChanged(this.otherPlayer);
+                        TicTacToeModelFirebase.this.playersListener.otherPlayersNameChanged(this.otherPlayer);
                     }
                 }
                 break;
@@ -439,17 +439,20 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     String s = String.format(" ACTIVE -- I'm the player with the ID %s .. and should PLAY NOW ...", status.getParameter1());
                     Log.v(Globals.Tag, s);
 
-                    this.internalGameState = InternalGameState.Active;
+                    this.appState = AppState.Active;
+                    TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(0, true);
                 }
                 else {
 
                     String s = String.format(" PASSIVE -- I'm the player with the ID %s .. and should WAIT NOW ...", status.getParameter1());
                     Log.v(Globals.Tag, s);
 
-                    this.internalGameState = InternalGameState.Inactive;
+                    this.appState = AppState.Passive;
+                    TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(1, true);
                 }
 
                 // TODO: DAS SCHEINT NICHT ZU STIMMEN .. SOLLTE NUR EINMAL !!!!!!!! in der APp stehen !!!
+                // TODO: Möglicherweise mit STone unknown =!=!
                 this.stone = (status.getParameter2().equals("X")) ? GameStone.X : GameStone.O;
                 break;
 
@@ -499,12 +502,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         String key = this.cellToKey(row, col);
 
         // ignore this request - current game over or not initialized
-        // xx xx xx
-        if (this.internalGameState == InternalGameState.Initialization)
+        if (this.appState == AppState.Init || this.appState == AppState.PendingForNextCloudState)
             return false;
 
         // it's not your turn
-        if (this.internalGameState == InternalGameState.Inactive) {
+        if (this.appState == AppState.Passive) {
 
             String msg = String.format("It's %s's turn!", this.otherPlayer);
             Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show();
@@ -512,7 +514,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
 
         // is there already a stone, ignore call
-        if (!isFieldEmpty(key))
+        if (! this.isFieldEmpty(key))
             return false;
 
         // set stone on board

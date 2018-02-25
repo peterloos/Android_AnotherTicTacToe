@@ -23,7 +23,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
 
     private GameStone[][] board;
     private boolean firstPlayer;
-    private InternalGameState internalGameState;
+    private AppState appState;
 
     // listeners
     private OnBoardChangedListener boardListener;
@@ -79,7 +79,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
         }
 
         this.firstPlayer = true;
-        this.internalGameState = InternalGameState.Inactive;
+        this.appState = AppState.Passive;
 
         if (this.boardListener != null) {
             this.boardListener.clearBoard();
@@ -103,7 +103,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
     public boolean setStone(int row, int col) {
 
         // ignore this request - current game over or not initialized
-        if (this.internalGameState == InternalGameState.Inactive)
+        if (this.appState == AppState.Passive)
             return false;
 
         // is there already a stone, ignore call
@@ -122,7 +122,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
         // check for end of game
         if (this.checkForEndOfGame()) {
 
-            this.internalGameState = InternalGameState.Inactive;
+            this.appState = AppState.Passive;
 
             String result = String.format(
                     Locale.getDefault(),
@@ -176,7 +176,7 @@ public class TicTacToeModelOffline implements ITicTacToe {
         }
         if (emptyStones == 0) {
 
-            this.internalGameState = InternalGameState.Inactive;
+            this.appState = AppState.Passive;
 
             Toast.makeText(this.context, "Tic-Tac-Toe: Sorry - Game over ...",
                     Toast.LENGTH_SHORT).show();

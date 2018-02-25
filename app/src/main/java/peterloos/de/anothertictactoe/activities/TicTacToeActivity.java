@@ -34,6 +34,11 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     private TicTacToeView view;
     private Toolbar toolbar;
 
+    private Resources res;
+    private int red;
+    private int green;
+    private int blue;
+
     // data model
     private ITicTacToe model;
 
@@ -69,6 +74,11 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         // clear textview's upon creation
         this.textviewPlayer1.setText("");
         this.textviewPlayer2.setText("");
+
+        this.res = this.getResources();
+        this.red = res.getColor(R.color.LightRed1);
+        this.green = res.getColor(R.color.LightGreen);
+        this.blue = res.getColor(R.color.LightBlue1);
 
         // create model
         // this.model = new TicTacToeModelOffline(this.getApplicationContext());
@@ -109,20 +119,9 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     }
 
     // implementation of interface 'OnPlayersConfigurationChangedListener'
-    @Override
-    public void playersNamesChanged(String firstPlayer, String secondPlayer) {
-
-//        this.textviewPlayer1.setText(firstPlayer);
-//        this.textviewPlayer2.setText(secondPlayer);
-    }
 
     @Override
-    public void playersActivityStateChanged(boolean firstPlayerIsActive, boolean secondPlayerIsActive) {
-
-        // TODO: DAS müssen Instanzvariablen werden ... einmal berechnen !!!
-//        Resources res = this.getResources();
-//        int red = res.getColor(R.color.OrangeRed);
-//        int green = res.getColor(R.color.LightGreen);
+//    public void playersActivityStateChanged(boolean firstPlayerIsActive, boolean secondPlayerIsActive) {
 //
 //        if (!firstPlayerIsActive && !secondPlayerIsActive) {
 //
@@ -140,29 +139,31 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 //            this.textviewPlayer1.setBackgroundColor(red);
 //            this.textviewPlayer2.setBackgroundColor(green);
 //        }
+//    }
+
+    public void playersActivityStateChanged(int whichPlayer, boolean playersState) {
+
+        if (whichPlayer == 0) {
+
+            this.textviewPlayer1.setBackgroundColor((playersState) ? this.green : this.red);
+        }
+        else if (whichPlayer == 1) {
+
+            this.textviewPlayer2.setBackgroundColor((playersState) ? this.green : this.red);
+        }
     }
 
     @Override
     public void currentPlayersNameChanged(String name) {
 
-        // TODO: DAS müssen Instanzvariablen werden ... einmal berechnen !!!
-        Resources res = this.getResources();
-        int red = res.getColor(R.color.OrangeRed);
-        int green = res.getColor(R.color.LightGreen);
-
         this.textviewPlayer1.setText(name);
-        this.textviewPlayer1.setBackgroundColor(red);
+        this.textviewPlayer1.setBackgroundColor(this.blue);
     }
 
     @Override
-    public void anotherPlayersNameChanged(String name) {
-
-        // TODO: DAS müssen Instanzvariablen werden ... einmal berechnen !!!
-        Resources res = this.getResources();
-        int red = res.getColor(R.color.OrangeRed);
-        int green = res.getColor(R.color.LightGreen);
+    public void otherPlayersNameChanged(String name) {
 
         this.textviewPlayer2.setText(name);
-        this.textviewPlayer1.setBackgroundColor(green);
+        this.textviewPlayer2.setBackgroundColor(this.blue);
     }
 }
