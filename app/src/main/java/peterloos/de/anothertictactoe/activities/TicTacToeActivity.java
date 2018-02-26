@@ -75,10 +75,12 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.textviewPlayer1.setText("");
         this.textviewPlayer2.setText("");
 
+        // TODO: Die Farben aufräumen !!!
+
         this.res = this.getResources();
-        this.red = res.getColor(R.color.LightRed1);
+        this.red = res.getColor(R.color.LightRed2);
         this.green = res.getColor(R.color.LightGreen);
-        this.blue = res.getColor(R.color.LightBlue1);
+        this.blue = res.getColor(R.color.LightBlue2);
 
         // create model
         // this.model = new TicTacToeModelOffline(this.getApplicationContext());
@@ -96,8 +98,6 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
             if (!nickname.equals("")) {
 
                 this.model.enterPlayer(nickname);
-
-                // clear UI
                 this.edittextNickname.setText("");
             }
         } else if (view == this.buttonLeave) {
@@ -121,49 +121,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     // implementation of interface 'OnPlayersConfigurationChangedListener'
 
     @Override
-//    public void playersActivityStateChanged(boolean firstPlayerIsActive, boolean secondPlayerIsActive) {
-//
-//        if (!firstPlayerIsActive && !secondPlayerIsActive) {
-//
-//            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
-//            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
-//
-//        } else if (firstPlayerIsActive && !secondPlayerIsActive) {
-//
-//            this.textviewPlayer1.setBackgroundColor(green);
-//            this.textviewPlayer2.setBackgroundColor(red);
-//
-//
-//        } else if (!firstPlayerIsActive && secondPlayerIsActive) {
-//
-//            this.textviewPlayer1.setBackgroundColor(red);
-//            this.textviewPlayer2.setBackgroundColor(green);
-//        }
-//    }
-
-//    public void playersActivityStateChanged(int whichPlayer, boolean playersState) {
-//
-//        if (whichPlayer == 0) {
-//
-//            String s = String.format("Male hier die Hintergrundfarbe  ==> Player: %d Status = %b", whichPlayer, playersState);
-//            Log.v(Globals.Tag, s);
-//
-//            this.textviewPlayer1.setBackgroundColor((playersState) ? this.green : this.red );
-//        }
-//        else if (whichPlayer == 1) {
-//
-//            String s = String.format("Male hier die Hintergrundfarbe  ==> Player: %d Status = %b", whichPlayer, playersState);
-//            Log.v(Globals.Tag, s);
-//
-//            this.textviewPlayer2.setBackgroundColor((playersState) ? this.green : this.red );
-//        }
-//    }
-
-
     public void playersActivityStateChanged(int whichPlayer, boolean active) {
-
-        String s = String.format("Male hier die Hintergrundfarbe  ==> Player: %d Status = %b", whichPlayer, active);
-        Log.v(Globals.Tag, s);
 
         if (whichPlayer == 0) {
 
@@ -171,21 +129,18 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
                 this.textviewPlayer1.setBackgroundColor(green);
                 this.textviewPlayer2.setBackgroundColor(red);
-            }
-            else {
+            } else {
 
                 this.textviewPlayer1.setBackgroundColor(red);
                 this.textviewPlayer2.setBackgroundColor(green);
             }
-        }
-        else if (whichPlayer == 1) {
+        } else if (whichPlayer == 1) {
 
             if (active) {
 
                 this.textviewPlayer1.setBackgroundColor(green);
                 this.textviewPlayer2.setBackgroundColor(red);
-            }
-            else {
+            } else {
 
                 this.textviewPlayer1.setBackgroundColor(red);
                 this.textviewPlayer2.setBackgroundColor(green);
