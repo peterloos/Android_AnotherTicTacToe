@@ -66,6 +66,7 @@ class Player {
     private long creationDate;
     private String key;
     private String stone;
+    private int score;
 
     // c'tors
     public Player() {
@@ -112,6 +113,14 @@ class Player {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     @Override
@@ -192,11 +201,11 @@ class Status {
 public class TicTacToeModelFirebase implements ITicTacToe {
 
     // cloud states
-//    private final String GameIdle = "GameIdle";
-//    private final String GameRoom1Player = "GameRoom1Player";
-//    private final String GameRoom2Players = "GameRoom2Players";
-//    private final String GameActivePlayer = "GameActivePlayer";
-//    private final String GameOver = "GameOver";
+    private final String GameIdle = "GameIdle";
+    private final String GameRoom1Player = "GameRoom1Player";
+    private final String GameRoom2Players = "GameRoom2Players";
+    private final String GameActivePlayer = "GameActivePlayer";
+    private final String GameOver = "GameOver";
 
     // game commands
     private final String GameCommandClear = "clear";
@@ -394,9 +403,8 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         Status status = dataSnapshot.getValue(Status.class);
         String msg = String.format("evaluateStatusSnapshot  ==> Status: %s", status.toString());
         Log.v(Globals.Tag, msg);
-        CloudState cloudState = CloudState.valueOf(status.toString());
 
-        switch (cloudState) {
+        switch (status.getId()) {
 
             case GameIdle:
 
@@ -506,117 +514,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                 String s = String.format("NOT YET IMPLEMENTED  ==> Status: %s", status.getId());
                 Log.v(Globals.Tag, s);
                 break;
-
-//        switch (status.getId()) {
-//
-//            case GameIdle:
-//
-//                // TODO:
-//                // Hmmm, das würde sich für die Initialisierung anbieten
-//                break;
-//
-//            case GameRoom1Player:
-//            case GameRoom2Players:
-//
-//                if (TicTacToeModelFirebase.this.playersListener != null) {
-//
-//                    if (this.currentPlayer.equals(status.getParameter2())) {
-//
-//                        // the current user of the app has entered the room
-//                        String s = String.format("==> Status: %s -- currentPlayer: %s -- calling CURRENT !!!", status.getId(), status.getParameter2());
-//                        Log.v(Globals.Tag, s);
-//
-//                        TicTacToeModelFirebase.this.playersListener.currentPlayersNameChanged(status.getParameter2());
-//                    } else {
-//
-//                        String s = String.format("==> Status: %s -- currentPlayer: %s -- calling OTHER !!!", status.getId(), status.getParameter2());
-//                        Log.v(Globals.Tag, s);
-//
-//                        // a second player must have entered the room
-//                        this.otherPlayer = status.getParameter2();
-//                        TicTacToeModelFirebase.this.playersListener.otherPlayersNameChanged(this.otherPlayer);
-//                    }
-//                }
-//                break;
-//
-//            case GameActivePlayer:
-//
-//                // check for key of next player
-//                if (this.currentPlayerKey.equals("") || status.getParameter1().equals("")) {
-//
-//                    Log.v(Globals.Tag, "Internal ERROR: Unexpected Game State ===> " + status.toString());
-//                    break;
-//                }
-//
-//                // look at key of next player
-//                if (this.currentPlayerKey.equals(status.getParameter1())) {
-//
-//                    String s = String.format(" ACTIVE -- I'm the player with the ID %s .. and should PLAY NOW ...", status.getParameter1());
-//                    Log.v(Globals.Tag, s);
-//
-//                    if (this.stone == GameStone.Empty) {
-//
-//                        this.stone = GameStone.X;
-//                    }
-//
-//                    this.appState = AppState.Active;
-//                    TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(0, true);
-//                }
-//                else {
-//
-//                    String s = String.format(" PASSIVE -- I'm the player with the ID %s .. and should WAIT NOW ...", status.getParameter1());
-//                    Log.v(Globals.Tag, s);
-//
-//                    if (this.stone == GameStone.Empty) {
-//
-//                        this.stone = GameStone.O;
-//                    }
-//
-//                    this.appState = AppState.Passive;
-//                    TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(1, false);
-//                }
-//
-//                // TODO: DAS SCHEINT NICHT ZU STIMMEN .. SOLLTE NUR EINMAL !!!!!!!! in der APp stehen !!!
-//                // TODO: Möglicherweise mit STone unknown =!=!
-//
-//                //if (this.stone == GameStone.Empty) {
-////
-////                    this.stone = (status.getParameter2().equals("X")) ? GameStone.X : GameStone.O;
-////                }        // ODER: Doch vor den Spielen einen Zwischenzustand einführen:  GameBeforeActive
-////
-//
-//                break;
-//
-//            case GameOver:
-//
-//                // check key of player, who won the game
-//                if (this.currentPlayerKey.equals("") || status.getParameter1().equals("")) {
-//
-//                    Log.v(Globals.Tag, "Internal ERROR: Unexpected Game State ===> " + status.toString());
-//                    break;
-//                }
-//
-//                // place a toast for both winner and loser
-//                if (this.currentPlayerKey.equals(status.getParameter1())) {
-//
-//                    String toast = String.format("Yeaah %s you're the winner!", this.currentPlayer);
-//                    Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
-//                }
-//                else {
-//
-//                    String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
-//                    Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
-//                }
-//
-//                this.appState = AppState.Idle;
-//
-//                break;
-//
-//            default:
-//
-//                String s = String.format("NOT YET IMPLEMENTED  ==> Status: %s", status.getId());
-//                Log.v(Globals.Tag, s);
-//                break;
         }
     }
 
@@ -823,6 +720,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         player.setName(name);
         player.setKey(this.currentPlayerKey);
         player.setStone("Unknown");
+        player.setScore(0);
         playersRef.setValue(player);
     }
 
