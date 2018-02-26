@@ -234,7 +234,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
         this.context = context;
 
-        this.appState = AppState.Init;
+        this.appState = AppState.Idle;
         this.board = new HashMap<>();
 
         // TODO: Warum steht das nicht in initGame
@@ -253,6 +253,8 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
         this.refBoard.addValueEventListener(this.boardValueEventListener);
         this.refStatus.addValueEventListener(this.controlValueEventListener);
+
+        this.stone = GameStone.Empty;
 
         this.initializeBoardInternal();
 
@@ -439,6 +441,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     String s = String.format(" ACTIVE -- I'm the player with the ID %s .. and should PLAY NOW ...", status.getParameter1());
                     Log.v(Globals.Tag, s);
 
+                    if (this.stone == GameStone.Empty) {
+
+                        this.stone = GameStone.X;
+                    }
+
                     this.appState = AppState.Active;
                     TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(0, true);
                 }
@@ -447,13 +454,24 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     String s = String.format(" PASSIVE -- I'm the player with the ID %s .. and should WAIT NOW ...", status.getParameter1());
                     Log.v(Globals.Tag, s);
 
+                    if (this.stone == GameStone.Empty) {
+
+                        this.stone = GameStone.O;
+                    }
+
                     this.appState = AppState.Passive;
-                    TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(1, true);
+                    TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(1, false);
                 }
 
                 // TODO: DAS SCHEINT NICHT ZU STIMMEN .. SOLLTE NUR EINMAL !!!!!!!! in der APp stehen !!!
                 // TODO: Möglicherweise mit STone unknown =!=!
-                this.stone = (status.getParameter2().equals("X")) ? GameStone.X : GameStone.O;
+
+                //if (this.stone == GameStone.Empty) {
+//
+//                    this.stone = (status.getParameter2().equals("X")) ? GameStone.X : GameStone.O;
+//                }        // ODER: Doch vor den Spielen einen Zwischenzustand einführen:  GameBeforeActive
+//
+
                 break;
 
             case GameOver:
@@ -476,6 +494,8 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
                     Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
                 }
+
+                this.appState = AppState.Idle;
 
                 break;
 
@@ -502,7 +522,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         String key = this.cellToKey(row, col);
 
         // ignore this request - current game over or not initialized
-        if (this.appState == AppState.Init || this.appState == AppState.PendingForNextCloudState)
+        if (this.appState == AppState.Idle || this.appState == AppState.PendingForNextCloudState)
             return false;
 
         // it's not your turn
@@ -517,7 +537,10 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         if (! this.isFieldEmpty(key))
             return false;
 
-        // set stone on board
+        // accepting stone - set view into 'passive' state
+        this.appState = AppState.PendingForNextCloudState;
+
+        // set stone on (remote) board
         Log.v("PeLo", "setStone ==> row = " + row + ", col = " + col);
         this.setSingleStoneRemote(row, col, this.stone);
 

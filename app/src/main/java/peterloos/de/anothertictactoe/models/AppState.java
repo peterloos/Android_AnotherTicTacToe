@@ -6,5 +6,5 @@ package peterloos.de.anothertictactoe.models;
 
 public enum AppState {
 
-    Init, PendingForNextCloudState, Active, Passive
+    Idle, Active, Passive, PendingForNextCloudState
 }

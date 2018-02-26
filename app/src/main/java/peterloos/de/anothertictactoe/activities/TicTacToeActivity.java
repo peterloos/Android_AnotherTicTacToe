@@ -141,15 +141,55 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 //        }
 //    }
 
-    public void playersActivityStateChanged(int whichPlayer, boolean playersState) {
+//    public void playersActivityStateChanged(int whichPlayer, boolean playersState) {
+//
+//        if (whichPlayer == 0) {
+//
+//            String s = String.format("Male hier die Hintergrundfarbe  ==> Player: %d Status = %b", whichPlayer, playersState);
+//            Log.v(Globals.Tag, s);
+//
+//            this.textviewPlayer1.setBackgroundColor((playersState) ? this.green : this.red );
+//        }
+//        else if (whichPlayer == 1) {
+//
+//            String s = String.format("Male hier die Hintergrundfarbe  ==> Player: %d Status = %b", whichPlayer, playersState);
+//            Log.v(Globals.Tag, s);
+//
+//            this.textviewPlayer2.setBackgroundColor((playersState) ? this.green : this.red );
+//        }
+//    }
+
+
+    public void playersActivityStateChanged(int whichPlayer, boolean active) {
+
+        String s = String.format("Male hier die Hintergrundfarbe  ==> Player: %d Status = %b", whichPlayer, active);
+        Log.v(Globals.Tag, s);
 
         if (whichPlayer == 0) {
 
-            this.textviewPlayer1.setBackgroundColor((playersState) ? this.green : this.red);
+            if (active) {
+
+                this.textviewPlayer1.setBackgroundColor(green);
+                this.textviewPlayer2.setBackgroundColor(red);
+            }
+            else {
+
+                this.textviewPlayer1.setBackgroundColor(red);
+                this.textviewPlayer2.setBackgroundColor(green);
+            }
         }
         else if (whichPlayer == 1) {
 
-            this.textviewPlayer2.setBackgroundColor((playersState) ? this.green : this.red);
+            if (active) {
+
+                this.textviewPlayer1.setBackgroundColor(green);
+                this.textviewPlayer2.setBackgroundColor(red);
+            }
+            else {
+
+                this.textviewPlayer1.setBackgroundColor(red);
+                this.textviewPlayer2.setBackgroundColor(green);
+            }
         }
     }
 
