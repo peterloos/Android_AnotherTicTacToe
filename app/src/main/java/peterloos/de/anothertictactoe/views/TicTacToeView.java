@@ -53,6 +53,11 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
     public TicTacToeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
+        if(this.isInEditMode()){
+            // nothing to do if view is currently in edit mode
+            return;
+        }
+
         // need some view metrics to layout UI elements
         DisplayMetrics metrics = new DisplayMetrics();
         Activity activity = ((Activity) this.getContext());
@@ -98,6 +103,10 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if(this.isInEditMode()){
+            return; // do nothing in edit mode
+        }
 
         if (this.firstOnDraw) {
 

@@ -30,6 +30,8 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     private EditText edittextNickname;
     private TextView textviewPlayer1;
     private TextView textviewPlayer2;
+    private TextView textviewScore1;
+    private TextView textviewScore2;
 
     private TicTacToeView view;
     private Toolbar toolbar;
@@ -61,6 +63,8 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.edittextNickname = this.findViewById(R.id.edittextNickname);
         this.textviewPlayer1 = this.findViewById(R.id.textviewPlayer1);
         this.textviewPlayer2 = this.findViewById(R.id.textviewPlayer2);
+        this.textviewScore1 = this.findViewById(R.id.textviewScore1);
+        this.textviewScore2 = this.findViewById(R.id.textviewScore2);
         this.buttonStart = this.findViewById(R.id.buttonStart);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
         this.buttonClear = this.findViewById(R.id.buttonClear);
@@ -160,5 +164,16 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
         this.textviewPlayer2.setText(name);
         this.textviewPlayer2.setBackgroundColor(this.blue);
+    }
+
+    @Override
+    public void scoreChanged (int score, boolean atLeftSide) {
+
+        if (atLeftSide) {
+            this.textviewScore1.setText (Integer.toString(score));
+        }
+        else {
+            this.textviewScore2.setText (Integer.toString(score));
+        }
     }
 }

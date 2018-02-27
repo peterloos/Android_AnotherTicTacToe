@@ -322,10 +322,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
 
 
-
-
-
-
         // now initialize remote database
         // this.initializeBoardRemote();
 
@@ -343,6 +339,8 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
     @Override
     public void restart() {
+
+        this.setCommand (GameCommandClear);
 
         // TODO:
         // DAs muss nach dem Architektur Redesign komplett neu geschrieben werden ...........................
@@ -493,16 +491,24 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     break;
                 }
 
+                Log.v(Globals.Tag, "GameOver ===============================> " + status.toString());
+
+                int score = Integer.valueOf(status.getParameter2());
+
                 // place a toast for both winner and loser
                 if (this.currentPlayerKey.equals(status.getParameter1())) {
 
                     String toast = String.format("Yeaah %s you're the winner!", this.currentPlayer);
                     Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
+
+                    playersListener.scoreChanged(score, true);
                 }
                 else {
 
                     String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
                     Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
+
+                    playersListener.scoreChanged(score, false);
                 }
 
                 this.appState = AppState.Idle;

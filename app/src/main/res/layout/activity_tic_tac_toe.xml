@@ -170,18 +170,18 @@
             android:text="Start" />
 
         <Button
-            android:id="@+id/buttonClear"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Clear" />
-
-        <Button
             android:id="@+id/buttonRestart"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Another Game" />
+            android:text="New Game" />
+
+        <Button
+            android:id="@+id/buttonClear"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Exit" />
 
     </LinearLayout>
 

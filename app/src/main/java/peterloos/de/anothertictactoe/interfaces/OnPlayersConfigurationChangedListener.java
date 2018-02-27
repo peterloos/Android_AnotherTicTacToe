@@ -9,4 +9,5 @@ public interface OnPlayersConfigurationChangedListener {
     void playersActivityStateChanged(int whichPlayer, boolean playersState);
     void currentPlayersNameChanged (String name);
     void otherPlayersNameChanged (String name);
+    void scoreChanged (int score, boolean atLeftSide);
 }
