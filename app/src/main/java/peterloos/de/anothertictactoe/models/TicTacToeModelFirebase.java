@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.DatabaseReference.CompletionListener;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
@@ -300,40 +301,11 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     }
 
     @Override
-    public void leavePlayer() {
-
-        if (!this.currentPlayer.equals("")) {
-
-            this.refPlayers.child(this.playerKeys[0]).removeValue();
-        }
-    }
-
-    @Override
     public void start() {
 
         // trigger start command in cloud
         this.setCommand(GameCommandStart);
     }
-
-    @Override
-    public void clear() {
-
-        this.setCommand (GameCommandClear);
-
-
-
-        // now initialize remote database
-        // this.initializeBoardRemote();
-
-//        // notify view(s)
-//        if (this.boardListener != null) {
-//            this.boardListener.clearBoard();
-//        }
-//        if (this.playersListener != null) {
-//            this.playersListener.playersActivityStateChanged(false, false);
-//        }
-    }
-
 
     // TODO : ACHTUNG :  DIESE SEQAUENZ HABEN WIR ZWEI MAL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -362,6 +334,48 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 //            TicTacToeModelFirebase.this.playersListener.playersNamesChanged
 //                    (TicTacToeModelFirebase.this.playerNames[0],
 //                            TicTacToeModelFirebase.this.playerNames[1]);
+//        }
+    }
+
+    @Override
+    public void exit() {
+
+        // "clear" cloud command
+        this.refCommand.setValue(GameCommandClear, new CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+            }
+        });
+
+        // remove all players
+        this.refPlayers.removeValue(new CompletionListener() {
+
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                Log.v(Globals.Tag, "All players removed");
+            }
+        });
+
+        // reset ticket number to zero
+        this.refTicket.child("ticketNumber").setValue(0, new CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+            }
+        });
+
+
+        // now initialize remote database
+        // this.initializeBoardRemote();
+
+//        // notify view(s)
+//        if (this.boardListener != null) {
+//            this.boardListener.clearBoard();
+//        }
+//        if (this.playersListener != null) {
+//            this.playersListener.playersActivityStateChanged(false, false);
 //        }
     }
 
@@ -728,6 +742,20 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         player.setStone("Unknown");
         player.setScore(0);
         playersRef.setValue(player);
+    }
+
+    private void removeAllPlayers() {
+
+        this.refPlayers.removeValue(new DatabaseReference.CompletionListener() {
+
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                Log.v(Globals.Tag, "All players removed");
+            }
+        });
+
+
     }
 
     private void setCommand(String cmd) {

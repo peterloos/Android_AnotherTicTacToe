@@ -58,18 +58,11 @@ public class TicTacToeModelOffline implements ITicTacToe {
     }
 
     @Override
-    public void leavePlayer () {
-
-        // TODO: TBD
-    }
-
-    @Override
     public void start () {
 
         // TODO: TBD
     }
 
-    @Override
     public void clear() {
 
         for (int i = 0; i < Dimension; i++) {
@@ -93,7 +86,14 @@ public class TicTacToeModelOffline implements ITicTacToe {
         // probably to be done
     }
 
-        @Override
+    @Override
+    public void exit () {
+
+        // TODO: TBD
+    }
+
+
+    @Override
     public GameStone getStoneAt(int row, int col) {
 
         return this.board[row][col];

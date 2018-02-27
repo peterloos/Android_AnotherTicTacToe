@@ -72,7 +72,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Leave" />
+            android:text="OBSOLETE" />
 
     </LinearLayout>
 
@@ -177,7 +177,7 @@
             android:text="New Game" />
 
         <Button
-            android:id="@+id/buttonClear"
+            android:id="@+id/buttonExit"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"

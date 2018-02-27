@@ -12,12 +12,12 @@ public interface ITicTacToe {
     void setOnPlayersChangedListener(OnPlayersConfigurationChangedListener listener);
 
     void enterPlayer (String player);
-    void leavePlayer ();
+    // void leavePlayer ();
 
     GameStone getStoneAt (int row, int col);
     boolean setStone(int row, int col);
 
     void start();
-    void clear();
     void restart();
+    void exit();
 }

@@ -24,8 +24,8 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     private Button buttonEnter;
     private Button buttonLeave;
     private Button buttonStart;
-    private Button buttonClear;
     private Button buttonRestart;
+    private Button buttonExit;
 
     private EditText edittextNickname;
     private TextView textviewPlayer1;
@@ -67,13 +67,13 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.textviewScore2 = this.findViewById(R.id.textviewScore2);
         this.buttonStart = this.findViewById(R.id.buttonStart);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
-        this.buttonClear = this.findViewById(R.id.buttonClear);
+        this.buttonExit = this.findViewById(R.id.buttonExit);
 
         this.buttonEnter.setOnClickListener(this);
         this.buttonLeave.setOnClickListener(this);
         this.buttonStart.setOnClickListener(this);
-        this.buttonClear.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
+        this.buttonExit.setOnClickListener(this);
 
         // clear textview's upon creation
         this.textviewPlayer1.setText("");
@@ -104,21 +104,17 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
                 this.model.enterPlayer(nickname);
                 this.edittextNickname.setText("");
             }
-        } else if (view == this.buttonLeave) {
-
-            this.model.leavePlayer();
-
         } else if (view == this.buttonStart) {
 
             this.model.start();
 
-        } else if (view == this.buttonClear) {
-
-            this.model.clear();
-
         } else if (view == this.buttonRestart) {
 
             this.model.restart();
+
+        } else if (view == this.buttonExit) {
+
+            this.model.exit();
         }
     }
 
@@ -167,13 +163,12 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
-    public void scoreChanged (int score, boolean atLeftSide) {
+    public void scoreChanged(int score, boolean atLeftSide) {
 
         if (atLeftSide) {
-            this.textviewScore1.setText (Integer.toString(score));
-        }
-        else {
-            this.textviewScore2.setText (Integer.toString(score));
+            this.textviewScore1.setText(Integer.toString(score));
+        } else {
+            this.textviewScore2.setText(Integer.toString(score));
         }
     }
 }
