@@ -15,6 +15,7 @@ import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.R;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnPlayersConfigurationChangedListener;
+import peterloos.de.anothertictactoe.models.GameStone;
 import peterloos.de.anothertictactoe.models.TicTacToeModelFirebase;
 import peterloos.de.anothertictactoe.views.TicTacToeView;
 
@@ -22,10 +23,9 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
     // UI controls
     private Button buttonEnter;
-    private Button buttonLeave;
+    private Button buttonExit;
     private Button buttonStart;
     private Button buttonRestart;
-    private Button buttonExit;
 
     private EditText edittextNickname;
     private TextView textviewPlayer1;
@@ -59,7 +59,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         // retrieve references of controls
         this.view = this.findViewById(R.id.tictactoeView);
         this.buttonEnter = this.findViewById(R.id.buttonEnter);
-        this.buttonLeave = this.findViewById(R.id.buttonLeave);
+        this.buttonExit = this.findViewById(R.id.buttonExit);
         this.edittextNickname = this.findViewById(R.id.edittextNickname);
         this.textviewPlayer1 = this.findViewById(R.id.textviewPlayer1);
         this.textviewPlayer2 = this.findViewById(R.id.textviewPlayer2);
@@ -67,13 +67,12 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.textviewScore2 = this.findViewById(R.id.textviewScore2);
         this.buttonStart = this.findViewById(R.id.buttonStart);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
-        this.buttonExit = this.findViewById(R.id.buttonExit);
 
         this.buttonEnter.setOnClickListener(this);
-        this.buttonLeave.setOnClickListener(this);
+        this.buttonExit.setOnClickListener(this);
         this.buttonStart.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
-        this.buttonExit.setOnClickListener(this);
+
 
         // clear textview's upon creation
         this.textviewPlayer1.setText("");
@@ -170,5 +169,10 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         } else {
             this.textviewScore2.setText(Integer.toString(score));
         }
+    }
+
+    @Override
+    public void stoneChanged(GameStone stone) {
+
     }
 }

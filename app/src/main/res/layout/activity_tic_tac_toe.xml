@@ -18,11 +18,9 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <!-- TODO -->
-    <!-- Enter your nickname that will be used to play this Multiplayer-Tic-Tac-Toe: -->
 
     <LinearLayout
-        android:id="@+id/nickname"
+        android:id="@+id/linearLayoutNickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
@@ -56,7 +54,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginEnd="5dp"
-        android:layout_below="@+id/nickname"
+        android:layout_below="@+id/linearLayoutNickname"
         android:orientation="horizontal">
 
         <Button
@@ -68,11 +66,11 @@
             android:text="Enter" />
 
         <Button
-            android:id="@+id/buttonLeave"
+            android:id="@+id/buttonExit"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="OBSOLETE" />
+            android:text="Exit" />
 
     </LinearLayout>
 
@@ -174,14 +172,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="New Game" />
-
-        <Button
-            android:id="@+id/buttonExit"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Exit" />
+            android:text="Another Game" />
 
     </LinearLayout>
 
