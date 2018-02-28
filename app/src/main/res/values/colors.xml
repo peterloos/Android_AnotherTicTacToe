@@ -8,10 +8,7 @@
 
     <color name="LightGrey">#D3D3D3</color>
     <color name="LightGreen">#90EE90</color>
-    <color name="LightRed1">#EF9A9A</color>
-    <color name="LightRed2">#E57373</color>
-
-    <color name="LightBlue1">#2196F3</color>
-    <color name="LightBlue2">#03A9F4</color>
+    <color name="LightBlue">#03A9F4</color>
+    <color name="Red">#FFFF0000</color>
 
 </resources>

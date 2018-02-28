@@ -291,64 +291,34 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     @Override
     public void start() {
 
-        // trigger start command in cloud
-        this.setCommand(GameCommandStart);
+        // trigger 'start' command in cloud
+        this.emitComand(GameCommandStart);
     }
 
     @Override
     public void restart() {
 
-        this.setCommand (GameCommandClear);
+        // trigger 'clear' command in cloud
+        this.emitComand(GameCommandClear);
     }
 
     @Override
     public void exit() {
 
-        // "clear" cloud command
-        this.refCommand.setValue(GameCommandClear, new CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        this.emitComand(GameCommandClear);   // send "clear" command to firebase cloud
+        this.deleteAllPlayers();   // remove all players
+        this.resetTicketNumber();  // reset ticket number to zero
+        this.clearStatus();        // clear game status
 
-            }
-        });
+        // update view(s)
+        if (this.playersListener != null) {
+            this.playersListener.clearPlayersStateChanged();
 
-        // remove all players
-        this.refPlayers.removeValue(new CompletionListener() {
-
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-                Log.v(Globals.Tag, "All players removed");
-            }
-        });
-
-        // reset ticket number to zero
-        this.refTicket.child("ticketNumber").setValue(0, new CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-            }
-        });
-
-        this.refStatus.child("id").setValue("", new  CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-            }
-        });
-
-
-        // now initialize remote database
-        // this.initializeBoardRemote();
-
-//        // notify view(s)
-//        if (this.boardListener != null) {
-//            this.boardListener.clearBoard();
-//        }
-//        if (this.playersListener != null) {
-//            this.playersListener.playersActivityStateChanged(false, false);
-//        }
+            this.playersListener.scoreChanged(0, true);
+            this.playersListener.scoreChanged(0, true);
+        }
     }
+
 
     private ValueEventListener boardValueEventListener = new ValueEventListener() {
         @Override
@@ -413,9 +383,9 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                     this.appState = AppState.Active;
 
-                    if (TicTacToeModelFirebase.this.playersListener != null) {
+                    if (this.playersListener != null) {
 
-                        TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(0, true);
+                        this.playersListener.playersActivityStateChanged(0, true);
                     }
                 }
                 else {
@@ -425,9 +395,9 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                     this.appState = AppState.Passive;
 
-                    if (TicTacToeModelFirebase.this.playersListener != null) {
+                    if (this.playersListener != null) {
 
-                        TicTacToeModelFirebase.this.playersListener.playersActivityStateChanged(1, false);
+                        this.playersListener.playersActivityStateChanged(1, false);
                     }
                 }
                 break;
@@ -451,9 +421,9 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     String toast = String.format("Yeaah %s you're the winner!", this.currentPlayer);
                     Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
 
-                    if (TicTacToeModelFirebase.this.playersListener != null) {
+                    if (this.playersListener != null) {
 
-                        playersListener.scoreChanged(score, true);
+                        this.playersListener.scoreChanged(score, true);
                     }
                 }
                 else {
@@ -461,10 +431,15 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
                     Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
 
-                    if (TicTacToeModelFirebase.this.playersListener != null) {
+                    if (this.playersListener != null) {
 
-                        playersListener.scoreChanged(score, false);
+                        this.playersListener.scoreChanged(score, false);
                     }
+                }
+
+                if (TicTacToeModelFirebase.this.playersListener != null) {
+
+                    this.playersListener.clearPlayersStateChanged();
                 }
 
                 this.appState = AppState.Idle;
@@ -671,45 +646,10 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         });
     }
 
-    private void addPlayer(String name, int ticketNumber) {
-
-        DatabaseReference playersRef = this.refPlayers.push();
-
-        this.currentPlayer = name;
-        this.currentPlayerKey = playersRef.getKey();
-
-        Player player = new Player();
-        player.setName(name);
-        player.setKey(this.currentPlayerKey);
-
-        this.stone = (ticketNumber == 1) ? GameStone.X : GameStone.O;
-        player.setStone(this.stone.toString());
-
-        if (TicTacToeModelFirebase.this.playersListener != null) {
-
-            TicTacToeModelFirebase.this.playersListener.stoneChanged(this.stone);
-        }
-
-        player.setScore(0);
-        playersRef.setValue(player);
-    }
-
-    private void removeAllPlayers() {
-
-        this.refPlayers.removeValue(new DatabaseReference.CompletionListener() {
-
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-
-                Log.v(Globals.Tag, "All players removed");
-            }
-        });
-    }
-
-    private void setCommand(String cmd) {
-
-        this.refCommand.setValue(cmd);
-    }
+//    private void setCommand(String cmd) {
+//
+//        this.refCommand.setValue(cmd);
+//    }
 
 //    private void updateState(String state) {
 //
@@ -726,6 +666,76 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             }
         }
     }
+
+    // =============================================================================================
+
+    /*
+     *   firebase specific functions
+     */
+
+    private void emitComand(final String cmd) {
+        this.refCommand.setValue(cmd, new CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                Log.v(Globals.Tag, "data base: control/command => " + cmd);
+            }
+        });
+    }
+
+    private void addPlayer(String name, int ticketNumber) {
+
+        DatabaseReference playersRef = this.refPlayers.push();
+
+        this.currentPlayer = name;
+        this.currentPlayerKey = playersRef.getKey();
+
+        Player player = new Player();
+        player.setName(name);
+        player.setKey(this.currentPlayerKey);
+
+        this.stone = (ticketNumber == 1) ? GameStone.X : GameStone.O;
+        player.setStone(this.stone.toString());
+
+        player.setScore(0);
+        playersRef.setValue(player);
+    }
+
+    private void deleteAllPlayers() {
+        this.refPlayers.removeValue(new CompletionListener() {
+
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                Log.v(Globals.Tag, "data base: players => null");
+            }
+        });
+    }
+
+    private void resetTicketNumber() {
+        this.refTicket.child("ticketNumber").setValue(0, new CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                Log.v(Globals.Tag, "data base: control/ticket/ticketNumber => 0");
+            }
+        });
+    }
+
+    private void clearStatus() {
+        Status empty = new Status ();
+        this.refStatus.setValue(empty, new CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                Log.v(Globals.Tag,"data base: control/status => { id : \"\", par1 : \"\", par2 : \"\" } ");
+            }
+        });
+    }
+
+    // =============================================================================================
+
+
 
     private ChildEventListener childEventListener = new ChildEventListener() {
 

@@ -77,13 +77,15 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         // clear textview's upon creation
         this.textviewPlayer1.setText("");
         this.textviewPlayer2.setText("");
+        this.textviewScore1.setText("Score: 0");
+        this.textviewScore2.setText("Score: 0");
 
         // TODO: Die Farben aufräumen !!!
 
         this.res = this.getResources();
-        this.red = res.getColor(R.color.LightRed2);
+        this.red = res.getColor(R.color.Red);
         this.green = res.getColor(R.color.LightGreen);
-        this.blue = res.getColor(R.color.LightBlue2);
+        this.blue = res.getColor(R.color.LightBlue);
 
         // create model
         // this.model = new TicTacToeModelOffline(this.getApplicationContext());
@@ -164,15 +166,23 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void scoreChanged(int score, boolean atLeftSide) {
 
+//        if (atLeftSide) {
+//            this.textviewScore1.setText(Integer.toString(score));
+//        } else {
+//            this.textviewScore2.setText(Integer.toString(score));
+//        }
+
         if (atLeftSide) {
-            this.textviewScore1.setText(Integer.toString(score));
+            this.textviewScore1.setText("Score: " + Integer.toString(score));
         } else {
-            this.textviewScore2.setText(Integer.toString(score));
+            this.textviewScore2.setText("Score: " + Integer.toString(score));
         }
     }
 
     @Override
-    public void stoneChanged(GameStone stone) {
+    public  void clearPlayersStateChanged() {
 
+        this.textviewPlayer1.setBackgroundColor(this.blue);
+        this.textviewPlayer2.setBackgroundColor(this.blue);
     }
 }
