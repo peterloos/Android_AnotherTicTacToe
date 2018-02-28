@@ -19,7 +19,9 @@ import peterloos.de.anothertictactoe.models.GameStone;
 import peterloos.de.anothertictactoe.models.TicTacToeModelFirebase;
 import peterloos.de.anothertictactoe.views.TicTacToeView;
 
-public class TicTacToeActivity extends AppCompatActivity implements View.OnClickListener, OnPlayersConfigurationChangedListener {
+public class TicTacToeActivity
+        extends AppCompatActivity
+        implements View.OnClickListener, OnPlayersConfigurationChangedListener {
 
     // UI controls
     private Button buttonEnter;
@@ -52,8 +54,8 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         // setup toolbar
         this.toolbar = (Toolbar) this.findViewById(R.id.main_toolbar);
         this.toolbar.setTitleTextColor(Color.WHITE);
-        this.toolbar.setTitle("Tic Tac Toe");
-        this.toolbar.setSubtitle("noch was");
+        this.toolbar.setTitle("Another Tic Tac Toe");
+        this.toolbar.setSubtitle("A Simple Multiplayer Version");
         this.setSupportActionBar(this.toolbar);
 
         // retrieve references of controls
@@ -68,19 +70,17 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
         this.buttonStart = this.findViewById(R.id.buttonStart);
         this.buttonRestart = this.findViewById(R.id.buttonRestart);
 
+        // register event handler
         this.buttonEnter.setOnClickListener(this);
         this.buttonExit.setOnClickListener(this);
         this.buttonStart.setOnClickListener(this);
         this.buttonRestart.setOnClickListener(this);
 
-
-        // clear textview's upon creation
+        // initialize textview's upon creation
         this.textviewPlayer1.setText("");
         this.textviewPlayer2.setText("");
         this.textviewScore1.setText("Score: 0");
         this.textviewScore2.setText("Score: 0");
-
-        // TODO: Die Farben aufräumen !!!
 
         this.res = this.getResources();
         this.red = res.getColor(R.color.Red);
@@ -128,23 +128,23 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
 
             if (active) {
 
-                this.textviewPlayer1.setBackgroundColor(green);
-                this.textviewPlayer2.setBackgroundColor(red);
+                this.textviewPlayer1.setBackgroundColor(this.green);
+                this.textviewPlayer2.setBackgroundColor(this.red);
             } else {
 
-                this.textviewPlayer1.setBackgroundColor(red);
-                this.textviewPlayer2.setBackgroundColor(green);
+                this.textviewPlayer1.setBackgroundColor(this.red);
+                this.textviewPlayer2.setBackgroundColor(this.green);
             }
         } else if (whichPlayer == 1) {
 
             if (active) {
 
-                this.textviewPlayer1.setBackgroundColor(green);
-                this.textviewPlayer2.setBackgroundColor(red);
+                this.textviewPlayer1.setBackgroundColor(this.green);
+                this.textviewPlayer2.setBackgroundColor(this.red);
             } else {
 
-                this.textviewPlayer1.setBackgroundColor(red);
-                this.textviewPlayer2.setBackgroundColor(green);
+                this.textviewPlayer1.setBackgroundColor(this.red);
+                this.textviewPlayer2.setBackgroundColor(this.green);
             }
         }
     }
@@ -152,25 +152,35 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void currentPlayersNameChanged(String name) {
 
-        this.textviewPlayer1.setText(name);
-        this.textviewPlayer1.setBackgroundColor(this.blue);
+        if (name == null || name.equals("")) {
+
+            this.textviewPlayer1.setText("");
+            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
+        }
+        else {
+
+            this.textviewPlayer1.setText(name);
+            this.textviewPlayer1.setBackgroundColor(this.blue);
+        }
     }
 
     @Override
     public void otherPlayersNameChanged(String name) {
 
-        this.textviewPlayer2.setText(name);
-        this.textviewPlayer2.setBackgroundColor(this.blue);
+        if (name == null || name.equals("")) {
+
+            this.textviewPlayer2.setText("");
+            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
+        }
+        else {
+
+            this.textviewPlayer2.setText(name);
+            this.textviewPlayer2.setBackgroundColor(this.blue);
+        }
     }
 
     @Override
     public void scoreChanged(int score, boolean atLeftSide) {
-
-//        if (atLeftSide) {
-//            this.textviewScore1.setText(Integer.toString(score));
-//        } else {
-//            this.textviewScore2.setText(Integer.toString(score));
-//        }
 
         if (atLeftSide) {
             this.textviewScore1.setText("Score: " + Integer.toString(score));
@@ -180,7 +190,7 @@ public class TicTacToeActivity extends AppCompatActivity implements View.OnClick
     }
 
     @Override
-    public  void clearPlayersStateChanged() {
+    public void clearPlayersStateChanged() {
 
         this.textviewPlayer1.setBackgroundColor(this.blue);
         this.textviewPlayer2.setBackgroundColor(this.blue);
