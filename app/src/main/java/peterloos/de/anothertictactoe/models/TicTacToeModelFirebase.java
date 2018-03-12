@@ -391,40 +391,50 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             case GameOver:
 
                 // check key of player, who won the game
-                if (this.currentPlayerKey.equals("") || status.getParameter1().equals("")) {
+                if (this.currentPlayerKey.equals("")) {
 
                     Log.v(Globals.Tag, "Internal ERROR: Unexpected Game State ===> " + status.toString());
                     break;
                 }
 
-                Log.v(Globals.Tag, "GameOver => " + status.toString());
-                int score = Integer.valueOf(status.getParameter2());
+                if (! status.getParameter1().equals("")) {
 
-                // place a toast for both winner and loser
-                if (this.currentPlayerKey.equals(status.getParameter1())) {
+                    // game is over, the first parameter contains the key of the winner
+                    Log.v(Globals.Tag, "GameOver => " + status.toString());
+                    int score = Integer.valueOf(status.getParameter2());
 
-                    String toast = String.format("Yeaah %s you're the winner!", this.currentPlayer);
-                    Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
+                    // place a toast for both winner and loser
+                    if (this.currentPlayerKey.equals(status.getParameter1())) {
 
-                    if (this.playersListener != null) {
+                        String toast = String.format("Yeaah %s you're the winner!", this.currentPlayer);
+                        Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
 
-                        this.playersListener.scoreChanged(score, true);
+                        if (this.playersListener != null) {
+
+                            this.playersListener.scoreChanged(score, true);
+                        }
+                    }
+                    else {
+
+                        String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
+                        Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
+
+                        if (this.playersListener != null) {
+
+                            this.playersListener.scoreChanged(score, false);
+                        }
+                    }
+
+                    if (TicTacToeModelFirebase.this.playersListener != null) {
+
+                        this.playersListener.clearPlayersStateChanged();
                     }
                 }
                 else {
 
-                    String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
+                    // game is over, first parameter is empty: game ended with a draw
+                    String toast = String.format("Game over --- it's a draw !!!");
                     Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
-
-                    if (this.playersListener != null) {
-
-                        this.playersListener.scoreChanged(score, false);
-                    }
-                }
-
-                if (TicTacToeModelFirebase.this.playersListener != null) {
-
-                    this.playersListener.clearPlayersStateChanged();
                 }
 
                 this.appState = AppState.Idle;

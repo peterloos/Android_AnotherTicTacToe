@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://D:\GitRepository_peterloos\Android\AnotherTicTacToe_Android\AnotherTicTacToe.iml" filepath="D:\GitRepository_peterloos\Android\AnotherTicTacToe_Android\AnotherTicTacToe.iml" />
-      <module fileurl="file://$PROJECT_DIR$/AnotherTicTacToe_Android.iml" filepath="$PROJECT_DIR$/AnotherTicTacToe_Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AnotherTicTacToe.iml" filepath="$PROJECT_DIR$/AnotherTicTacToe.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
