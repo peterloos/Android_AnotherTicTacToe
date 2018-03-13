@@ -21,7 +21,7 @@ import peterloos.de.anothertictactoe.models.GameStone;
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
 /**
- * Created by loospete on 24.01.2018.
+ * Created by PeLo on 24.01.2018.
  */
 
 public class TicTacToeView extends View implements View.OnTouchListener, OnBoardChangedListener {

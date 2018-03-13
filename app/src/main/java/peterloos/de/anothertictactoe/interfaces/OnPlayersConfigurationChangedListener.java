@@ -1,9 +1,7 @@
 package peterloos.de.anothertictactoe.interfaces;
 
-import peterloos.de.anothertictactoe.models.GameStone;
-
 /**
- * Created by loospete on 07.02.2018.
+ * Created by PeLo on 07.02.2018.
  */
 
 public interface OnPlayersConfigurationChangedListener {

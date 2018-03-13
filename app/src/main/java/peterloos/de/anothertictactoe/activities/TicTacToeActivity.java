@@ -11,11 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.R;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnPlayersConfigurationChangedListener;
-import peterloos.de.anothertictactoe.models.GameStone;
 import peterloos.de.anothertictactoe.models.TicTacToeModelFirebase;
 import peterloos.de.anothertictactoe.views.TicTacToeView;
 
@@ -79,8 +77,8 @@ public class TicTacToeActivity
         // initialize textview's upon creation
         this.textviewPlayer1.setText("");
         this.textviewPlayer2.setText("");
-        this.textviewScore1.setText("Score: 0");
-        this.textviewScore2.setText("Score: 0");
+        this.textviewScore1.setText(R.string.score_0);
+        this.textviewScore2.setText(R.string.score_0);
 
         this.res = this.getResources();
         this.red = res.getColor(R.color.Red);
@@ -88,7 +86,6 @@ public class TicTacToeActivity
         this.blue = res.getColor(R.color.LightBlue);
 
         // create model
-        // this.model = new TicTacToeModelOffline(this.getApplicationContext());
         this.model = new TicTacToeModelFirebase(this.getApplicationContext());
         this.model.setOnPlayersChangedListener(this);
         this.view.setTicTacToeModel(this.model);

@@ -27,7 +27,7 @@ import peterloos.de.anothertictactoe.interfaces.OnPlayersConfigurationChangedLis
 import static peterloos.de.anothertictactoe.Globals.Dimension;
 
 /**
- * Created by loospete on 28.01.2018.
+ * Created by PeLo on 28.01.2018.
  */
 
 class Cell {

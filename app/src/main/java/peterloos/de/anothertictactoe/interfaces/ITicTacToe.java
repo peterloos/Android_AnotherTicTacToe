@@ -3,7 +3,7 @@ package peterloos.de.anothertictactoe.interfaces;
 import peterloos.de.anothertictactoe.models.GameStone;
 
 /**
- * Created by loospete on 27.01.2018.
+ * Created by PeLo on 27.01.2018.
  */
 
 public interface ITicTacToe {
