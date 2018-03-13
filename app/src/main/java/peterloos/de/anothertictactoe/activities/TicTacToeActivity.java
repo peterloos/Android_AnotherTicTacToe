@@ -167,7 +167,7 @@ public class TicTacToeActivity
         if (name == null || name.equals("")) {
 
             this.textviewPlayer2.setText("");
-            this.textviewPlayer2.setBackgroundColor(Color.LTGRAY);
+            this.textviewPlayer2.setBackgroundColor(Color.WHITE);
         }
         else {
 
