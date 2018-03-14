@@ -52,8 +52,8 @@ public class TicTacToeActivity
         // setup toolbar
         this.toolbar = (Toolbar) this.findViewById(R.id.main_toolbar);
         this.toolbar.setTitleTextColor(Color.WHITE);
-        this.toolbar.setTitle("Another Tic Tac Toe");
-        this.toolbar.setSubtitle("A Simple Multiplayer Version");
+        this.toolbar.setTitle("Another Tic-Tac-Toe");
+        this.toolbar.setSubtitle("Simple Multiplayer Game");
         this.setSupportActionBar(this.toolbar);
 
         // retrieve references of controls
