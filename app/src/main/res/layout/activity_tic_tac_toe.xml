@@ -149,12 +149,12 @@
         android:id="@+id/tictactoeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:layout_above="@+id/footer"
-        android:layout_below="@+id/linearlayoutScores" />
+        android:layout_below="@+id/linearlayoutScores"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp" />
 
     <LinearLayout
         android:id="@+id/footer"

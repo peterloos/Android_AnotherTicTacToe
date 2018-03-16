@@ -2,6 +2,8 @@ package peterloos.de.anothertictactoe.activities;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.R;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnPlayersConfigurationChangedListener;
@@ -40,6 +43,7 @@ public class TicTacToeActivity
     private int red;
     private int green;
     private int blue;
+    private int lightgrey;
 
     // data model
     private ITicTacToe model;
@@ -81,9 +85,13 @@ public class TicTacToeActivity
         this.textviewScore2.setText(R.string.score_0);
 
         this.res = this.getResources();
-        this.red = res.getColor(R.color.Red);
-        this.green = res.getColor(R.color.LightGreen);
-        this.blue = res.getColor(R.color.LightBlue);
+        this.red = this.res.getColor(R.color.Red);
+        this.green = this.res.getColor(R.color.LightGreen);
+        this.blue = this.res.getColor(R.color.LightBlue);
+        this.lightgrey = this.res.getColor(R.color.VeryLightGrey);
+
+        this.textviewPlayer1.setBackgroundColor(this.lightgrey);
+        this.textviewPlayer2.setBackgroundColor(this.lightgrey);
 
         // create model
         this.model = new TicTacToeModelFirebase(this.getApplicationContext());
@@ -152,7 +160,7 @@ public class TicTacToeActivity
         if (name == null || name.equals("")) {
 
             this.textviewPlayer1.setText("");
-            this.textviewPlayer1.setBackgroundColor(Color.LTGRAY);
+            this.textviewPlayer1.setBackgroundColor(this.lightgrey);
         }
         else {
 
@@ -167,7 +175,7 @@ public class TicTacToeActivity
         if (name == null || name.equals("")) {
 
             this.textviewPlayer2.setText("");
-            this.textviewPlayer2.setBackgroundColor(Color.WHITE);
+            this.textviewPlayer2.setBackgroundColor(this.lightgrey);
         }
         else {
 

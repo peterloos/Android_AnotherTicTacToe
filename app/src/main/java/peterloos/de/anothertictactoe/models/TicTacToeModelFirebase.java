@@ -374,8 +374,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                         this.playersListener.playersActivityStateChanged(0, true);
                     }
-                }
-                else {
+                } else {
 
                     String s = String.format("Player with key %s should *wait* now", status.getParameter1());
                     Log.v(Globals.Tag, s);
@@ -397,7 +396,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     break;
                 }
 
-                if (! status.getParameter1().equals("")) {
+                if (!status.getParameter1().equals("")) {
 
                     // game is over, the first parameter contains the key of the winner
                     Log.v(Globals.Tag, "GameOver => " + status.toString());
@@ -413,8 +412,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                             this.playersListener.scoreChanged(score, true);
                         }
-                    }
-                    else {
+                    } else {
 
                         String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
                         Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
@@ -429,8 +427,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                         this.playersListener.clearPlayersStateChanged();
                     }
-                }
-                else {
+                } else {
 
                     // game is over, first parameter is empty: game ended with a draw
                     String toast = String.format("Game over --- it's a draw !!!");
@@ -474,7 +471,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
 
         // is there already a stone, ignore call
-        if (! this.isFieldEmpty(key))
+        if (!this.isFieldEmpty(key))
             return false;
 
         // accepting stone - set view into 'passive' state ...
@@ -704,12 +701,12 @@ public class TicTacToeModelFirebase implements ITicTacToe {
     }
 
     private void clearStatus() {
-        Status empty = new Status ();
+        Status empty = new Status();
         this.refStatus.setValue(empty, new CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
 
-                Log.v(Globals.Tag,"data base: control/status => { id : \"\", par1 : \"\", par2 : \"\" } ");
+                Log.v(Globals.Tag, "data base: control/status => { id : \"\", par1 : \"\", par2 : \"\" } ");
             }
         });
     }
@@ -740,7 +737,8 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
 
         @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {}
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+        }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
@@ -751,27 +749,26 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
             if (TicTacToeModelFirebase.this.playersListener != null) {
 
-                if (TicTacToeModelFirebase.this.currentPlayer.equals(player.getName())) {
+                TicTacToeModelFirebase.this.currentPlayer = "";
+                TicTacToeModelFirebase.this.currentPlayerKey = "";
+                TicTacToeModelFirebase.this.otherPlayer = "";
 
-                    TicTacToeModelFirebase.this.currentPlayer = "";
-                    TicTacToeModelFirebase.this.currentPlayerKey = "";
-                    TicTacToeModelFirebase.this.playersListener.currentPlayersNameChanged("");
+                TicTacToeModelFirebase.this.playersListener.currentPlayersNameChanged("");
+                TicTacToeModelFirebase.this.playersListener.otherPlayersNameChanged("");
 
-                    TicTacToeModelFirebase.this.playersListener.scoreChanged(0, true);
-                } else {
-
-                    TicTacToeModelFirebase.this.otherPlayer = "";
-                    TicTacToeModelFirebase.this.playersListener.otherPlayersNameChanged("");
-
-                    TicTacToeModelFirebase.this.playersListener.scoreChanged(0, false);
-                }
+                TicTacToeModelFirebase.this.playersListener.scoreChanged(0, false);
+                TicTacToeModelFirebase.this.playersListener.scoreChanged(0, true);
             }
+
+            TicTacToeModelFirebase.this.appState = AppState.Idle;
         }
 
         @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {}
+        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+        }
 
         @Override
-        public void onCancelled(DatabaseError databaseError) {}
+        public void onCancelled(DatabaseError databaseError) {
+        }
     };
 }
