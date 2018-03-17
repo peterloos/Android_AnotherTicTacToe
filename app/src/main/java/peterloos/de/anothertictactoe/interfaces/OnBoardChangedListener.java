@@ -8,9 +8,5 @@ import peterloos.de.anothertictactoe.models.GameStone;
 
 public interface OnBoardChangedListener {
 
-    // TODO: DA GINGE AUCH EINE EINZELNE METHODE UPDATE
-    // TODO: WARTE NOCH, BIS FIREBASE DRIN IST !!!
-    // TODO: OnBoardUpdateListener müsste dann das Interface heißen
-    void clearBoard();
-    void stoneChangedAt (int row, int col, GameStone stone);
+    void boardChanged ();
 }

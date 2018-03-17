@@ -9,7 +9,6 @@ import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -53,7 +52,7 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
     public TicTacToeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        if(this.isInEditMode()){
+        if (this.isInEditMode()) {
             // nothing to do if view is currently in edit mode
             return;
         }
@@ -94,7 +93,7 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
     }
 
     // public interface
-    public void setTicTacToeModel (ITicTacToe model) {
+    public void setTicTacToeModel(ITicTacToe model) {
 
         this.model = model;
         this.model.setOnBoardChangedListener(this);
@@ -104,7 +103,7 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if(this.isInEditMode()){
+        if (this.isInEditMode()) {
             return; // do nothing in edit mode
         }
 
@@ -120,14 +119,7 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
 
     // implementation of interface 'OnBoardChangedListener'
     @Override
-    public void stoneChangedAt(int row, int col, GameStone stone) {
-
-        // update view
-        this.invalidate();
-    }
-
-    @Override
-    public void clearBoard() {
+    public void boardChanged() {
 
         // update view
         this.invalidate();
@@ -137,7 +129,6 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
     public boolean onTouch(View view, MotionEvent event) {
 
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            Log.v(Globals.Tag, "onTouch ........................................");
             this.handleClickEvent((int) event.getX(), (int) event.getY());
         }
 
@@ -145,6 +136,19 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
     }
 
     // private helper methods
+    private void handleClickEvent(int x, int y) {
+
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (this.helperRectangles[row][col].contains(x, y)) {
+
+                    this.model.setStone(row + 1, col + 1); // update model
+                    return;
+                }
+            }
+        }
+    }
+
     private void drawBoard(Canvas canvas) {
 
         canvas.drawColor(this.black);
@@ -154,21 +158,47 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
         int paddingVertical = this.mmInPxVertical * 2;   // 2mm
 
         // vertical lines
-        this.drawLine(canvas, this.left + this.distance, this.top + paddingVertical, this.left + this.distance, this.top + this.length - paddingVertical);
-        this.drawLine(canvas, this.left + 2 * this.distance, this.top + paddingVertical, this.left + 2 * this.distance, this.top + this.length - paddingVertical);
+        this.drawLine(
+                canvas,
+                this.left + this.distance,
+                this.top + paddingVertical,
+                this.left + this.distance,
+                this.top + this.length - paddingVertical
+        );
+
+        this.drawLine(
+                canvas,
+                this.left + 2 * this.distance,
+                this.top + paddingVertical,
+                this.left + 2 * this.distance,
+                this.top + this.length - paddingVertical
+        );
 
         // horizontal lines
-        this.drawLine(canvas, this.left + paddingHorizontal, this.top + this.distance, this.left + this.length - paddingHorizontal, this.top + this.distance);
-        this.drawLine(canvas, this.left + paddingHorizontal, this.top + 2 * this.distance, this.left + this.length - paddingHorizontal, this.top + 2 * this.distance);
+        this.drawLine(
+                canvas,
+                this.left + paddingHorizontal,
+                this.top + this.distance,
+                this.left + this.length - paddingHorizontal,
+                this.top + this.distance
+        );
+
+        this.drawLine(
+                canvas,
+                this.left + paddingHorizontal,
+                this.top + 2 * this.distance,
+                this.left + this.length - paddingHorizontal,
+                this.top + 2 * this.distance
+        );
     }
 
     private void drawStones(Canvas canvas) {
 
         for (int row = 0; row < Dimension; row++) {
             for (int col = 0; col < Dimension; col++) {
-                if (this.model.getStoneAt(row + 1,col + 1) == GameStone.X) {
+                if (this.model.getStoneAt(row + 1, col + 1) == GameStone.X) {
                     this.paintCross(canvas, row, col);
-                } else if (this.model.getStoneAt(row + 1,col + 1) == GameStone.O) {
+                } else if (this.model.getStoneAt(row + 1, col + 1) == GameStone.O) {
                     this.paintCircle(canvas, row, col);
                 }
             }
@@ -211,19 +241,6 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
                 this.paintCross);
     }
 
-    private void handleClickEvent(int x, int y) {
-
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (this.helperRectangles[row][col].contains(x, y)) {
-
-                    this.model.setStone(row + 1, col + 1); // update model
-                    return;
-                }
-            }
-        }
-    }
-
     private void init() {
 
         // calculate helper variables
@@ -245,15 +262,59 @@ public class TicTacToeView extends View implements View.OnTouchListener, OnBoard
         this.distance = length / 3;
 
         // need these rectangles for touch/click detection and to draw circles and crosses
-        Rect r1 = new Rect(this.left, this.top, this.left + this.distance, this.top + this.distance);
-        Rect r2 = new Rect(this.left + this.distance, this.top, this.left + 2 * this.distance, this.top + this.distance);
-        Rect r3 = new Rect(this.left + 2 * this.distance, this.top, this.left + this.length, this.top + this.distance);
-        Rect r4 = new Rect(this.left, this.top + this.distance, this.left + this.distance, this.top + 2 * this.distance);
-        Rect r5 = new Rect(this.left + this.distance, this.top + this.distance, this.left + 2 * this.distance, this.top + 2 * this.distance);
-        Rect r6 = new Rect(this.left + 2 * this.distance, this.top + this.distance, this.left + this.length, this.top + 2 * this.distance);
-        Rect r7 = new Rect(this.left, this.top + 2 * this.distance, this.left + this.distance, this.top + this.length);
-        Rect r8 = new Rect(this.left + this.distance, this.top + 2 * this.distance, this.left + 2 * this.distance, this.top + this.length);
-        Rect r9 = new Rect(this.left + 2 * this.distance, this.top + 2 * this.distance, this.left + this.length, this.top + this.length);
+        Rect r1 = new Rect(
+                this.left,
+                this.top,
+                this.left + this.distance,
+                this.top + this.distance);
+
+        Rect r2 = new Rect(
+                this.left + this.distance,
+                this.top,
+                this.left + 2 * this.distance,
+                this.top + this.distance);
+
+        Rect r3 = new Rect(
+                this.left + 2 * this.distance,
+                this.top,
+                this.left + this.length,
+                this.top + this.distance);
+
+        Rect r4 = new Rect(
+                this.left,
+                this.top + this.distance,
+                this.left + this.distance,
+                this.top + 2 * this.distance);
+
+        Rect r5 = new Rect(
+                this.left + this.distance,
+                this.top + this.distance,
+                this.left + 2 * this.distance,
+                this.top + 2 * this.distance);
+
+        Rect r6 = new Rect(
+                this.left + 2 * this.distance,
+                this.top + this.distance,
+                this.left + this.length,
+                this.top + 2 * this.distance);
+
+        Rect r7 = new Rect(
+                this.left,
+                this.top + 2 * this.distance,
+                this.left + this.distance,
+                this.top + this.length);
+
+        Rect r8 = new Rect(
+                this.left + this.distance,
+                this.top + 2 * this.distance,
+                this.left + 2 * this.distance,
+                this.top + this.length);
+
+        Rect r9 = new Rect(
+                this.left + 2 * this.distance,
+                this.top + 2 * this.distance,
+                this.left + this.length,
+                this.top + this.length);
 
         this.helperRectangles = new Rect[][]{
                 {r1, r2, r3},

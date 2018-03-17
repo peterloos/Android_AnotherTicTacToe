@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="peterloos.de.anothertictactoe.activities.TicTacToeActivity">
@@ -22,26 +21,27 @@
         android:id="@+id/linearLayoutNickname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:layout_below="@+id/main_toolbar"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/textviewNickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
             android:text="@string/nickname"
+            android:textSize="18sp"
             android:textStyle="normal|bold" />
 
         <EditText
             android:id="@+id/edittextNickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=""/>
+            android:inputType="text"
+            android:text="" />
 
     </LinearLayout>
 
@@ -49,27 +49,28 @@
         android:id="@+id/register_unregister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:layout_below="@+id/linearLayoutNickname"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/buttonEnter"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/nickname"
-            android:text="@string/enter" />
+            android:layout_weight="1"
+            android:text="@string/enter"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/buttonExit"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="@string/exit" />
+            android:layout_weight="1"
+            android:text="@string/exit"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 
@@ -77,35 +78,35 @@
         android:id="@+id/linearlayoutPlayers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:layout_below="@+id/register_unregister"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/textviewPlayer1"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_gravity="start"
             android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
             android:padding="5dp"
             android:textAlignment="textStart"
-            android:layout_gravity="start"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/textviewPlayer2"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:layout_marginLeft="5dp"
             android:layout_marginStart="5dp"
+            android:layout_weight="1"
             android:padding="5dp"
             android:textAlignment="textEnd"
-            android:layout_gravity="end"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -114,33 +115,33 @@
         android:id="@+id/linearlayoutScores"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:layout_below="@+id/linearlayoutPlayers"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/textviewScore1"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:textAlignment="textStart"
             android:layout_gravity="start"
+            android:layout_weight="1"
+            android:padding="5dp"
             android:text="@string/score_0"
+            android:textAlignment="textStart"
             android:textStyle="normal|italic" />
 
         <TextView
             android:id="@+id/textviewScore2"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:textAlignment="textEnd"
             android:layout_gravity="end"
+            android:layout_weight="1"
+            android:padding="5dp"
             android:text="@string/score_0"
+            android:textAlignment="textEnd"
             android:textStyle="normal|italic" />
 
     </LinearLayout>
@@ -160,26 +161,28 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/buttonStart"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="@string/start" />
+            android:layout_weight="1"
+            android:text="@string/start"
+            tools:ignore="ButtonStyle" />
 
         <Button
             android:id="@+id/buttonRestart"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="@string/another_game" />
+            android:layout_weight="1"
+            android:text="@string/another_game"
+            tools:ignore="ButtonStyle" />
 
     </LinearLayout>
 

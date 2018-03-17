@@ -9,15 +9,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.DatabaseReference.CompletionListener;
-import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
@@ -29,170 +26,6 @@ import static peterloos.de.anothertictactoe.Globals.Dimension;
 /**
  * Created by PeLo on 28.01.2018.
  */
-
-class Cell {
-
-    private String state;
-
-    public Cell() {
-        // default constructor required for Firebase
-    }
-
-    public Cell(String state) {
-        this.state = state;
-    }
-
-    public String getState() {
-        return this.state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    @Override
-    public String toString() {
-        return "State: ==> " + this.state;
-    }
-}
-
-class Player {
-
-    private String name;
-    private long creationDate;
-    private String key;
-    private String stone;
-    private int score;
-
-    // c'tors
-    public Player() {
-        // default constructor required for Firebase
-    }
-
-    public Player(String name) {
-        this.name = name;
-    }
-
-    // getter/setter
-    public Map<String, String> getCreationDate() {
-        return ServerValue.TIMESTAMP;
-    }
-
-    @Exclude
-    public long getCreationDateLong() {
-        return this.creationDate;
-    }
-
-    public void setCreationDate(long creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStone() {
-        return stone;
-    }
-
-    public void setStone(String stone) {
-        this.stone = stone;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public int getScore() {
-        return this.score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    @Override
-    public String toString() {
-        return "Name: " + this.name;
-    }
-}
-
-class Ticket {
-
-    private int ticketNumber;
-
-    // c'tors
-    public Ticket() {
-        // default constructor required for Firebase
-    }
-
-    // getter/setter
-    public int getTicketNumber() {
-        return this.ticketNumber;
-    }
-
-    public void setTicketNumber(int ticketNumber) {
-        this.ticketNumber = ticketNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "Ticket: Number = " + this.ticketNumber;
-    }
-}
-
-class Status {
-
-    private String id;
-    private String parameter1;
-    private String parameter2;
-
-    // c'tors
-    public Status() {
-        // default constructor required for Firebase
-        this.id = "";
-        this.parameter1 = "";
-        this.parameter2 = "";
-    }
-
-    // getter/setter
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getParameter1() {
-        return this.parameter1;
-    }
-
-    public void setParameter1(String parameter) {
-        this.parameter1 = parameter;
-    }
-
-    public String getParameter2() {
-        return this.parameter2;
-    }
-
-    public void setParameter2(String parameter) {
-        this.parameter2 = parameter;
-    }
-
-    @Override
-    public String toString() {
-        return "Id: " + this.id + ", Parameter1: [" + this.parameter1 + "]" + ", Parameter2: [" + this.parameter2 + "]";
-    }
-}
 
 public class TicTacToeModelFirebase implements ITicTacToe {
 
@@ -341,8 +174,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         }
 
         Status status = dataSnapshot.getValue(Status.class);
-        String msg = String.format("evaluateStatusSnapshot  ==> Status: %s", status.toString());
-        Log.v(Globals.Tag, msg);
 
         switch (status.getId()) {
 
@@ -425,13 +256,16 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                     if (TicTacToeModelFirebase.this.playersListener != null) {
 
-                        this.playersListener.clearPlayersStateChanged();
+                        this.playersListener.clearPlayersState();
                     }
                 } else {
 
                     // game is over, first parameter is empty: game ended with a draw
-                    String toast = String.format("Game over --- it's a draw !!!");
-                    Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            this.context,
+                            "Game over --- it's a draw !!!",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
 
                 this.appState = AppState.Idle;
@@ -527,10 +361,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             // fire notification according to state of board
             if (this.boardListener != null) {
 
-                this.boardListener.stoneChangedAt(
-                        this.rowToInt(row),
-                        this.colToInt(col),
-                        GameStone.valueOf(stone));
+                this.boardListener.boardChanged();
             }
         }
     }
@@ -585,9 +416,6 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                 }
 
                 Ticket ticket = mutableData.getValue(Ticket.class);
-                String msg = String.format("doTransaction --> currentValue ==> %d", ticket.getTicketNumber());
-                Log.v(Globals.Tag, msg);
-
                 int ticketNumber = ticket.getTicketNumber();
 
                 if (ticketNumber >= 2) {

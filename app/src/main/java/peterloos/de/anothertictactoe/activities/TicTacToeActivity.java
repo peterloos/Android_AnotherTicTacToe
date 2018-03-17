@@ -195,7 +195,7 @@ public class TicTacToeActivity
     }
 
     @Override
-    public void clearPlayersStateChanged() {
+    public void clearPlayersState() {
 
         this.textviewPlayer1.setBackgroundColor(this.blue);
         this.textviewPlayer2.setBackgroundColor(this.blue);

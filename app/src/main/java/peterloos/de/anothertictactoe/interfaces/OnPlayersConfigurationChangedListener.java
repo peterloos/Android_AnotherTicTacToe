@@ -7,7 +7,7 @@ package peterloos.de.anothertictactoe.interfaces;
 public interface OnPlayersConfigurationChangedListener {
 
     void playersActivityStateChanged(int whichPlayer, boolean playersState);
-    void clearPlayersStateChanged();
+    void clearPlayersState();
     void currentPlayersNameChanged (String name);
     void otherPlayersNameChanged (String name);
     void scoreChanged (int score, boolean atLeftSide);
