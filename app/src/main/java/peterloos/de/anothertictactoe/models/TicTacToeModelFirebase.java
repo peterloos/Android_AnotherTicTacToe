@@ -201,20 +201,14 @@ public class TicTacToeModelFirebase implements ITicTacToe {
                     Log.v(Globals.Tag, s);
 
                     this.appState = AppState.Active;
-                    if (this.playersListener != null) {
-
-                        this.playersListener.playersActivityStateChanged(0, true);
-                    }
+                    this.changePlayersActivityState(0, true);
                 } else {
 
                     String s = String.format("Player with key %s should *wait* now", status.getParameter1());
                     Log.v(Globals.Tag, s);
 
                     this.appState = AppState.Passive;
-                    if (this.playersListener != null) {
-
-                        this.playersListener.playersActivityStateChanged(1, false);
-                    }
+                    this.changePlayersActivityState(1, false);
                 }
                 break;
 
@@ -238,36 +232,21 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                         String toast = String.format("Yeaah %s you're the winner!", this.currentPlayer);
                         Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
-
-                        if (this.playersListener != null) {
-
-                            this.playersListener.scoreChanged(score, true);
-                        }
+                        this.changeScore(score, true);
                     } else {
 
                         String toast = String.format("Sorry %s you've lost the game!", this.currentPlayer);
                         Toast.makeText(this.context, toast, Toast.LENGTH_SHORT).show();
-
-                        if (this.playersListener != null) {
-
-                            this.playersListener.scoreChanged(score, false);
-                        }
-                    }
-
-                    if (TicTacToeModelFirebase.this.playersListener != null) {
-
-                        this.playersListener.clearPlayersState();
+                        this.changeScore(score, false);
                     }
                 } else {
 
                     // game is over, first parameter is empty: game ended with a draw
-                    Toast.makeText(
-                            this.context,
-                            "Game over --- it's a draw !!!",
-                            Toast.LENGTH_SHORT
-                    ).show();
+                    String message = "Game over --- it's a draw !!!";
+                    Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show();
                 }
 
+                this.clearPlayersState();
                 this.appState = AppState.Idle;
                 break;
 
@@ -359,10 +338,7 @@ public class TicTacToeModelFirebase implements ITicTacToe {
             this.board.put(key, stone);
 
             // fire notification according to state of board
-            if (this.boardListener != null) {
-
-                this.boardListener.boardChanged();
-            }
+            this.changeBoard();
         }
     }
 
@@ -442,21 +418,17 @@ public class TicTacToeModelFirebase implements ITicTacToe {
 
                         // let player enter into the room
                         String info = "Player " + nickname + " has entered!";
-                        Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
-                        Log.v(Globals.Tag, info);
-
                         TicTacToeModelFirebase.this.addPlayer(nickname, ticketNumber);
+                        Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
                     } else {
 
                         String info = "Sorry - There are still 2 players in the room!";
                         Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
-                        Log.v(Globals.Tag, info);
                     }
                 } else {
 
                     String info = "Sorry - There are still 2 players in the room!";
                     Toast.makeText(TicTacToeModelFirebase.this.context, info, Toast.LENGTH_SHORT).show();
-                    Log.v(Globals.Tag, info);
                 }
             }
         });
@@ -599,4 +571,43 @@ public class TicTacToeModelFirebase implements ITicTacToe {
         public void onCancelled(DatabaseError databaseError) {
         }
     };
+
+    // =============================================================================================
+
+    /*
+     *   helper functions
+     */
+
+    private void changePlayersActivityState(int whichPlayer, boolean playersState) {
+
+        if (this.playersListener != null) {
+
+            this.playersListener.playersActivityStateChanged(whichPlayer, playersState);
+        }
+    }
+
+    private void changeBoard() {
+
+        if (this.boardListener != null) {
+
+            this.boardListener.boardChanged();
+        }
+    }
+
+    private void changeScore(int score, boolean atLeftSide) {
+
+        if (this.playersListener != null) {
+
+            this.playersListener.scoreChanged(score, atLeftSide);
+        }
+    }
+
+    private void clearPlayersState() {
+
+        if (TicTacToeModelFirebase.this.playersListener != null) {
+
+            this.playersListener.clearPlayersState();
+        }
+    }
+
 }
