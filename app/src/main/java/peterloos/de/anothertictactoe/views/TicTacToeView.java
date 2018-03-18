@@ -12,7 +12,6 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 
-import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnBoardChangedListener;
 import peterloos.de.anothertictactoe.models.GameStone;

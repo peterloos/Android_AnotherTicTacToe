@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import peterloos.de.anothertictactoe.Globals;
 import peterloos.de.anothertictactoe.R;
 import peterloos.de.anothertictactoe.interfaces.ITicTacToe;
 import peterloos.de.anothertictactoe.interfaces.OnPlayersConfigurationChangedListener;
@@ -51,7 +50,7 @@ public class TicTacToeActivity
         this.setContentView(R.layout.activity_tic_tac_toe);
 
         // setup toolbar
-        this.toolbar = (Toolbar) this.findViewById(R.id.main_toolbar);
+        this.toolbar = this.findViewById(R.id.main_toolbar);
         this.toolbar.setTitleTextColor(Color.WHITE);
         this.toolbar.setTitle("Another Tic-Tac-Toe");
         this.toolbar.setSubtitle("Simple Multiplayer Game");
@@ -121,7 +120,9 @@ public class TicTacToeActivity
         }
     }
 
-    // implementation of interface 'OnPlayersConfigurationChangedListener'
+    /*
+     *  implementation of interface 'OnPlayersConfigurationChangedListener'
+     */
 
     @Override
     public void playersActivityStateChanged(int whichPlayer, boolean active) {
